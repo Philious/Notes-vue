@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import googleG from '@/assets/images/GoogleG.svg'
 import IconButton from '@/components/IconButton.vue';
-import { redirect } from '@/services/firebase';
-import { Icon, IconType } from '@/types/sharedTypes';
-// defineProps<{}>()
-let username: string = '';
-let password: string = '';
-const login = () => {}
+import { passwordSignIn, redirectSignIn, newUser, forgotPassword } from '@/store/firebaseStore';
+import { Icon, ButtonType } from '@/types/enums';
+import { ref } from 'vue';
+
+const username = ref<string>('');
+const password = ref<string>(''); 
 
 </script>
 
@@ -29,19 +29,25 @@ const login = () => {}
     />
     <IconButton
       class="login-btn"
-      :type="IconType.Filled"
+      :type="ButtonType.Filled"
       :icon="Icon.Right"
-      :action="login"
+      :action="() => passwordSignIn(username, password)"
     />
-    <button class="vertical txt-btn new">
+    <button
+      class="vertical txt-btn new"
+      @click="newUser"
+    >
       New user
     </button>
-    <button class="vertical txt-btn forgot">
+    <button
+      class="vertical txt-btn forgot"
+      @click="forgotPassword"
+    >
       Forgot<br>password
     </button>
     <button
       class="google-login"
-      @click="redirect"
+      @click="redirectSignIn"
     >
       <img
         :src="googleG"

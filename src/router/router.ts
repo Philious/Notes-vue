@@ -1,44 +1,33 @@
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createMemoryHistory, createRouter, RouteRecordRaw } from 'vue-router'
 
 import MainView from '@/views/MainPage.vue'
 import Login from '@/views/Login.vue'
-import LoginRedirect from '@/views/LoginRedirect.vue';
-import { getAuthorization } from '@/services/firebase';
+import { Page } from '@/types/enums';
 
-const user = getAuthorization();
 
-enum Page {
-  LOGIN = 'login',
-  REDIRECT = 'login-redirect',
-  MAIN = 'main'
-}
-
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   {
+    path: Page.REDIRECT,
+    redirect: Page.LOGIN,
+  }, {
     path: '/login',
     name: Page.LOGIN,
     component: Login
-  },
-  { 
-    path: '/:userId',
+  }, { 
+    path: '/main/:userId?',
     name: Page.MAIN,
     component: MainView,
     props: true
-  },
-
-  {
-    path: '/redirect',
-    name: Page.REDIRECT,
-    component: LoginRedirect
   }
 ]
 
-export const router = createRouter({
+const router = createRouter({
   history: createMemoryHistory(),
   routes,
 });
 
+export default router;
 
-router.beforeEach((to, from) => {
-  if(to.fullPath === '/') router.push({ name: 'login' });
-})
+export const goto = (name: Page, params?: Record<string, string>) => {
+  router.push({ name, params })
+}

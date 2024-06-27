@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {  dialogService } from '@/services/dialogService';
+import { dialogService } from '@/services/dialogService';
 
 </script>
 

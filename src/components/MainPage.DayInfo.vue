@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import night from '@/assets/images/night.png';
 import morning from '@/assets/images/morning.png';
 import midday from '@/assets/images/midday.png';
 import afternoon from '@/assets/images/afternoon.png';
 import evening from '@/assets/images/evening.png';
 import IconButton from './IconButton.vue';
-import { Icon, IconType } from '@/types/sharedTypes';
-import { logout } from '@/services/firebase';
+import { Icon, ButtonType, Page } from '@/types/enums';
+import router from '@/router/router';
 
-// defineProps<{}>()
 const timeOfDay = ref<{ greeting: string, img: any }>({greeting: '', img: ''});
 const img = ref('');
 const date = ref();
@@ -42,7 +41,8 @@ const setState = (t: number): NodeJS.Timeout => {
 onMounted(() => {
   getState();
   timeout = setState(1000 * 60 * 60)
-})
+});
+
 onUnmounted(() => clearTimeout(timeout));
 
 </script>
@@ -62,9 +62,9 @@ onUnmounted(() => clearTimeout(timeout));
     </div>
     <IconButton
       class="logout"
-      :type="IconType.Default"
+      :type="ButtonType.Default"
       :icon="Icon.LogOut"
-      :action="logout"
+      :action="() => router.push({name: Page.LOGIN })"
     />
   </div>
 </template>
@@ -110,8 +110,8 @@ onUnmounted(() => clearTimeout(timeout));
     .logout {
       fill: var(--white);
       position: absolute;
-      top: 0;
-      right: 0;
+      top: .5rem;
+      right: .5rem;
       filter: var(--shadow); 
     }
   }

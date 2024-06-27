@@ -1,11 +1,5 @@
+import { ToastOptions } from "@/types/types";
 import { createApp, h } from "vue";
-
-interface ToastOptions {
-  id?: string;
-  duration?: number;
-  transitionDuration?: number;
-  align?: 'left' | 'center' | 'right';
-}
 
 export default (message: string, options?: ToastOptions) => {
   const el = document.getElementById('overlays') ?? document.createElement('div');
@@ -46,7 +40,8 @@ export default (message: string, options?: ToastOptions) => {
     margin: auto;
     overflow:hidden;
     margin-bottom: 1rem;
-    background-color: var(--primary);
+    color: var(--n-100);
+    background-color: var(--white);
     display: grid;
     place-content: center;
     z-index: 2;

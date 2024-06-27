@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Icon, IconType, Note } from '@/types/sharedTypes';
+import { Note } from '@/types/types';
+import { Icon, ButtonType } from '@/types/enums';
 import { ref } from 'vue';
 import IconButton from './IconButton.vue';
 import { dateFormat } from '@/utils/sharedUtils';
@@ -9,28 +10,25 @@ const props = defineProps<Note>();
 const emit = defineEmits<{
   (e: 'update:title', value: string): void;
   (e: 'update:body', value: string): void;
-  (e: 'noteOptions', value: string): void;
   (e: 'close:ask'): void;
   (e: 'close:save'): void;
+  (e: 'display:options'): void;
 }>();
 
 const title = ref<HTMLElement | undefined>();
 const titleValue = ref(props.title);
 const bodyValue = ref(props.body);
 
-const titleUpdate = (event: Event) => {
-  emit('update:title', (event.target as HTMLInputElement).value)
-};
+const titleUpdate = (event: Event) => emit('update:title', (event.target as HTMLInputElement).value);
 
-const contentUpdate = (event: Event) => {
-  emit('update:body', (event.target as HTMLElement).innerText)
-};
+const contentUpdate = (event: Event) => emit('update:body', (event.target as HTMLTextAreaElement).value);
 
-const noteOptions = (id: string) => {
-  emit('noteOptions', id)
-}
+const closeAndAsk = () => emit('close:ask');
 
-const setLetterSize = () => {}
+const closeAndSave = () => emit('close:save');
+
+const options = () => emit('display:options');
+
 </script>
 
 <template>
@@ -51,35 +49,32 @@ const setLetterSize = () => {}
       <span>Created: {{ dateFormat(props.created) }}</span>
       <span>Updated: {{ dateFormat(props.lastupdated) }}</span>
     </div>
-    <div
-      ref="content"
-      class="write-area"
-      contenteditable
-      @input="contentUpdate"
-    >
-      {{ bodyValue }}
+    <div class="text-area-container">
+      <textarea
+        ref="content"
+        v-model="bodyValue"
+        class="text-area"
+        @input="contentUpdate"
+      ></textarea>
     </div>
     <div class="toolbar">
-      <IconButton
-        :type="IconType.Border"
-        :icon="Icon.Left"
-        :action="() => emit('close:ask')"
-      />
+      <div class="toolbar-left-section">
+        <IconButton
+          :type="ButtonType.Border"
+          :icon="Icon.Left"
+          :action="closeAndAsk"
+        />
+        <IconButton
+          :type="ButtonType.Border"
+          :icon="Icon.Check"
+          :action="closeAndSave"
+        />
+      </div>
       <div class="toolbar-right-section">
         <IconButton
-          :type="IconType.Border"
-          :icon="Icon.Remove"
-          :action="() => noteOptions(props.id)"
-        />
-        <IconButton
-          :type="IconType.Border"
-          :icon="Icon.LetterSize"
-          :action="() => setLetterSize"
-        />
-        <IconButton
-          :type="IconType.Border"
-          :icon="Icon.OK"
-          :action="() => emit('close:save')"
+          :type="ButtonType.Border"
+          :icon="Icon.Options"
+          :action="options"
         />
       </div>
     </div>
@@ -94,13 +89,14 @@ const setLetterSize = () => {}
     inset: 0 0 0 var(--note-width);
     display: grid;
     grid-template-rows: auto 1.5rem 1fr;
-    box-shadow: -1px 0 0 var(--n-300);
+    
     z-index: 1;
   }
   .toolbar {
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
+    box-shadow: 0 -1px 0 var(--n-300);
   }
   .icon-btn {
     @include base-btn;
@@ -117,21 +113,25 @@ const setLetterSize = () => {}
     stroke: var(--primary);
     stroke-width: 2;
   }
+  .toolbar-left-section,
   .toolbar-right-section {
     display: flex;
   }
   .title-area {
     box-sizing: border-box;
     padding: 0.5rem 0;
-    margin: 0 1rem;
-    border-bottom: 1px solid var(--n-300);
+    box-shadow: 0 1.0625rem 0 -1rem var(--n-300);
     text-transform: capitalize;
+    margin: 0.25rem;
   }
   .title {
+    box-sizing: border-box;
     font-size: 1rem;
     height: 3rem;
+    padding: 0 0.75rem;
     background-color: transparent;
     border: none;
+    width: 100%;
   }
   .date {
     font-size: 0.625rem;
@@ -142,14 +142,20 @@ const setLetterSize = () => {}
     display: flex;
     margin: auto 0; 
   }
-  .write-area {
+  .text-area-container {
+    margin: 0 .25rem;
+  }
+  .text-area {
     box-sizing: border-box;
+    border: none;
+    background: none;
+    line-height: 1.5;
     font-size: 0.875rem;
     width: 100%;
     height: 100%;
-    padding: 1rem;
+    padding: 1rem .75rem;
     white-space-collapse: break-spaces;
     overflow-y: auto;
+    resize: none;
   }
-  [contenteditable]:focus-visible { outline-color: var(--primary); }
 </style>

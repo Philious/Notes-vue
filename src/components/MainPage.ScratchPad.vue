@@ -1,32 +1,27 @@
 <script setup lang="ts">
 import IconButton from '@/components/IconButton.vue';
-import { Icon, IconType, MenuOption } from '@/types/sharedTypes';
-import { throttle } from '@/utils/sharedUtils';
-import { ref } from 'vue';
+import { Icon, ButtonType } from '@/types/enums';
+import { debounce } from '@/utils/sharedUtils';
 
-const model = defineModel<string>('body');
-const active = ref(false);
-const parentElement = ref<HTMLElement>();
-const menuOptions: MenuOption[] = [{
-  label: 'Make to note',
-  action: () => emit('action:make-note') 
-}];
+const emit = defineEmits<{
+  (e:'display:scratch-context-menu'): void,
+  (e: 'toggleScratch'): void
+}>();
 
-const update = (bodyValue: Event) => {
-  const el = (bodyValue.target as HTMLTextAreaElement);
-  model.value = el.innerHTML;
-}
-const lazyUpdate = throttle((bodyValue: Event) => update(bodyValue), 500)
+const modelBody = defineModel<string>('body');
+const modelActive = defineModel<boolean>('active');
 
-const emit = defineEmits<{(e:'display:contextmenu', menu: MenuOption[], parentElement: DOMRect): void, (e: 'action:make-note'): void}>();
+const update = (bodyValue: Event) => modelBody.value = (bodyValue.target as HTMLTextAreaElement).value;
+const lazyUpdate = debounce((bodyValue: Event) => update(bodyValue), 500)
 
-const viewOptions = () => { emit('display:contextmenu', menuOptions, parentElement.value!.getBoundingClientRect()) }
+const openContextMenu = (e: Event) => { e.stopPropagation(); emit('display:scratch-context-menu') }
 
-const toggle = () => active.value = !active.value
+const toggle = () => emit('toggleScratch');
+
 </script>
 
 <template>
-  <div :class="['scratch-pad', { 'active': active }]">
+  <div :class="['scratch-pad', { 'active': modelActive }]">
     <div
       class="scratch-pad-header"
       @click="toggle"
@@ -34,8 +29,14 @@ const toggle = () => active.value = !active.value
       <label class="header">Scratch pad</label>
       <div class="scratch-pad-options">
         <IconButton
+          class="options-icon"
+          :type="ButtonType.Border"
+          :icon="Icon.Options"
+          :action="openContextMenu"
+        />
+        <IconButton
           class="arrow-icon"
-          :type="IconType.Border"
+          :type="ButtonType.Border"
           :icon="Icon.Up"
           :action="() => {}"
         />
@@ -43,7 +44,7 @@ const toggle = () => active.value = !active.value
     </div>
     <textarea
       class="scratch-pad-area"
-      :value="model"
+      :value="modelBody"
       @blur="update"
       @input="lazyUpdate"
     ></textarea>
@@ -56,26 +57,33 @@ const toggle = () => active.value = !active.value
     display: grid;
     grid-template-rows: 48px 1fr;
     grid-area: var(--scratch-area);
-    padding: 0 1rem 2rem;
+    padding-bottom: 2rem;
     position: fixed;
     inset: auto calc(100vw - var(--scratch-width)) 0 0;
     transform: translateY(calc(100% - var(--toolbar-height)));
     box-shadow: 0 -0.0625rem 0 var(--n-300), 0.0625rem 0 var(--n-300);
     transition: transform .25s;
     box-sizing: border-box;
-    .arrow-icon {
-      transform: rotate(0);
-      transition: transform .25s;
-    }
+    &,
+    .arrow-icon,
+    .options-icon { transition: transform .25s; }
+    .arrow-icon { transform: rotate(0); }
+    .options-icon { transform: scale(0); }
     &.active {
       transform: translateY(0);
       .arrow-icon {
         transform: rotate(180deg);
       }
+      .options-icon { 
+        transform: scale(1);
+        transition-delay: .25s;
+      }
     }
   }
   .scratch-pad-header {
+    box-sizing: border-box;
     height: 3rem;
+    padding: 0 .5rem 0 1rem;
     width: 100%;
     display: flex;
     align-items: center;
@@ -85,6 +93,9 @@ const toggle = () => active.value = !active.value
     font-weight: 700;
     place-self: center start;
     
+  }
+  .scratch-pad-options {
+    display: flex;
   }
   .scratch-pad-area {
     background-color: hsl(320deg 16% 13%); 

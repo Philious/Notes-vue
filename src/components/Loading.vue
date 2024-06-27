@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { state } from '@/services/firebase';
 import { onMounted, ref } from 'vue';
 const dots = [
   '... ',

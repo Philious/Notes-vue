@@ -2,15 +2,21 @@
 import IconButton from '@/components/IconButton.vue';
 import toast from '@/plugins/toast';
 import { computed } from 'vue';
-import { DataBaseNotes, Icon, IconType } from '@/types/sharedTypes';
-import { setActiveNote, newActiveNote } from '@/services/firebase';
+import { DataBaseNotes } from '@/types/types';
+import { Icon, ButtonType } from '@/types/enums';
 import { dateFormat } from '@/utils/sharedUtils';
+import { newActiveNote, setActiveNote } from '@/services/activeNoteService';
 
 const props = defineProps<{
-  userId: string;
   database?: DataBaseNotes
 }>();
+
+defineEmits<{
+  (e: 'set-letter-size'):void
+}>()
+
 const database = computed(() => [...props.database?.values() ?? []]?.sort((a, b) => b.lastupdated - a.lastupdated));
+
 const getNote = (id: string) => {
   let note = props.database?.get(id);
   note ? setActiveNote(note) :  newNote();
@@ -30,7 +36,12 @@ const newNote = () => {
       <label class="header">Notes</label>
       <div class="list-options">
         <IconButton
-          :type="IconType.Border"
+          :type="ButtonType.Border"
+          :icon="Icon.LetterSize"
+          :action="newNote"
+        />
+        <IconButton
+          :type="ButtonType.Border"
           :icon="Icon.Add"
           :action="newNote"
         />
@@ -86,7 +97,7 @@ const newNote = () => {
     display: flex;
     place-self: center start;
     gap: .5rem;
-    padding: 0 1rem;
+    padding: 0 .5rem 0 1rem;
     justify-content: space-between;
     width: 100%;
     height: 3rem;
@@ -102,16 +113,7 @@ const newNote = () => {
   .list-options {
     display: flex;
   }
-  .btn  {
-    border: none;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    padding: 0;
-    width: 2rem;
-    height: 2rem;
-    background-color: transparent;
-  }
+
   .to-notes-btn {
     gap: .125rem;
   }

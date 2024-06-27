@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-// defineProps<{}>()
+import { ref } from 'vue';
 
 const emit = defineEmits<{
   (e: "toggle:menu"): void;
@@ -26,21 +24,6 @@ const count = ref(0)
         <path d="M0 2H16ZM0 8H16ZM0 14H16" />
       </svg>
     </button>
-    <!--
-    <button
-      class="new-note-btn"
-      @click="emit('new:note')"
-    >
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-      >
-        <path d="M8 2V14ZM2 8H14Z" />
-      </svg>
-      New
-    </button>
-    -->
     <button
       class="search-btn"
       @click="emit('toggle:search')"

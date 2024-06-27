@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Tab } from '@/types/sharedTypes';
+import { Tab } from '@/types/types';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{

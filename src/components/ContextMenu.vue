@@ -1,28 +1,25 @@
 <script setup lang="ts">
-import { menuSetup } from '@/services/menuService';
+import menuService from '@/services/contextMenuService';
 
 </script>
 
 <template>
-  {{ menuSetup.menuOptions }}
   <Teleport to="body">
     <Transition
       name="context-menu"
       appear
-      tag="div"
-      class="context-menu"
     >
       <div
-        v-if="menuSetup.menuOptions?.length"
+        v-if="menuService.menuOptions?.length"
         class="context-container"
       >
         <button
           class="mask"
-          @click="menuSetup.close"
-        />
+          @click="menuService.close"
+        ></button>
         <div class="context-menu">
           <button
-            v-for="option in menuSetup.menuOptions"
+            v-for="option in menuService.menuOptions"
             :key="option.label"
             class="option"
             @click="option.action"
@@ -36,31 +33,36 @@ import { menuSetup } from '@/services/menuService';
 </template>
 
 <style scoped lang="scss">
+  
+  .context-container,
   .mask {
     position: fixed;
     inset: 0;
   }
-
+  .context-container { z-index: 1; }
   .mask {
-    border: none;
-    padding: 0;
-    opacity: 0;
+    background-color: hsla(0, 0%, 0% , 0.24);
+    border:none;
   }
-
   .context-menu {
     position: fixed;
     inset: 0;
     top: unset;
-    border-radius: 1rem 1rem 0 0;
-    background-color: var(n-300);
+    bottom: 2rem;
+    max-width: min(90vw, 20rem);
+    border-radius: .5rem;
+    background-color: var(--n-200);
+    margin: auto;
   }
 
   .option {
-    height: 2.5rem;
+    height: 3rem;
     border: none;
     background-color: transparent;
+    font-size: 0.875rem;
     width: 100%;
-    color: var(n-700);
+    color: var(--n-700);
+    &:not(:last-child) { border-bottom: 1px solid var(--n-300); }
   }
 
   .section {
@@ -72,22 +74,13 @@ import { menuSetup } from '@/services/menuService';
 
   .context-menu-enter-active,
   .context-menu-leave-active {
-    transition: transform .5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity .25s linear;
+    .context-menu { transition: transform .5s cubic-bezier(0.22, 1, 0.36, 1); }
   }
 
   .context-menu-enter-from,
   .context-menu-leave-to {
-    transform: translateY(100%);
-  }
-
-  .context-menu-container-enter-active,
-  .context-menu-container-leave-active {
-    transition:
-      opacity .15s linear,
-  }
-
-  .context-menu-container-enter-from,
-  .context-menu-container-leave-to {
     opacity: 0;
+    .context-menu { transform: translateY(100%); }
   }
 </style>

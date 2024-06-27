@@ -5,91 +5,113 @@ import ScratchPad from '@/components/MainPage.ScratchPad.vue';
 import Note from '@/components/Note.vue';
 import { dialogService } from '@/services/dialogService';
 import toast from '@/plugins/toast';
-import { MenuOption, Tab } from '@/types/sharedTypes';
-import { clearActiveNote, firebaseCalls, getActiveNote, getDataBase, isLocal, testCalls, updateActiveNote,  } from '@/services/firebase';
+import { Tab } from '@/types/types';
+import { readOnlyDB, dbCalls } from '@/store/firebaseStore';
 import { noteHasChanged } from '@/utils/storeUtils';
 import NoteIcon from '@/assets/icons/note.24px.svg'
 import ScratchIcon from '@/assets/icons/scratch.24px.svg';
-import { menuService } from '@/services/menuService';
+import menuService from '@/services/contextMenuService';
 import { ref } from 'vue';
-
+import { Icon } from '@/types/enums';
+import { updateActiveNote, activeNote, clearActiveNote, setActiveNote, newActiveNote } from '@/services/activeNoteService';
 
 const props = defineProps<{
-  userId: string;
+  userId?: string;
 }>();
 
-const database = getDataBase();
-
-const { setNote, updateNote, removeNote } = isLocal() ? testCalls() : firebaseCalls(props.userId);
-const activeNote = getActiveNote();
+const { updateNote, setNote, removeNote } = dbCalls(props.userId);
 const activeTab = ref<string>('tab-0');
+const scratchNote = ref('');
+const scratchPadActive = ref(false);
 
-const updateTitle = (title: string) => updateActiveNote({title, lastupdated: new Date().valueOf()});
-const updateContent = (body: string) => updateActiveNote({body, lastupdated: new Date().valueOf()});
-const save =  () => {
-  toast('Save');
-  if (activeNote.value) database.value?.has(activeNote.value.id) ? updateNote(activeNote.value) : setNote(activeNote.value); 
-  clearActiveNote();
-  dialogService.close();
-}
-
-const noSave = () => {
-  toast('Note left unchanged');
-  clearActiveNote();
-  dialogService.close()
-}
-
-const closeNoteAsk = () => {
-  if (database.value?.size && activeNote.value && !noteHasChanged(database.value, activeNote.value)) return clearActiveNote();
-  dialogService.open('Save Note?', 'Or what?', [
-    { 
-      name: 'Yes', 
-      action: () => {
-        save();
-      }
-    },
-    { 
-      name: 'No', action: () => {
-        toast('Note left unchanged');
-        clearActiveNote();
-        dialogService.close()
-      }
-    },
-    { 
-      name: 'Cancel',
-      action: () =>  { dialogService.close() } 
-    }
-  ]);
-}
-const closeNoteSave = () => save();
-const deleteNote = (id: string) => {
-  dialogService.open('Delete note?', '',[
-    { 
-      name: 'Yes', 
-      action: () => {
-        toast('Note Deleted');
-        if (activeNote.value && database.value?.has(id)) removeNote(id);
-        clearActiveNote();
-        dialogService.close();
-      }
-    },
-    {
-      name: 'No',
-      action: dialogService.close,
-    }
-  ])
-}
-
-const scratch = ref<string>('scratch');
 const tabs: Tab[] = [
   { id: 'tab-0', label: 'Notes', icon: NoteIcon, action: () => activeTab.value = 'tab-0' },
   { id: 'tab-1', label: 'Scratch Pad', icon: ScratchIcon, action: () => activeTab.value = 'tab-1' }
 ];
 
-const scratchMenu = (menu: MenuOption[], rect: DOMRect) => {
-  menuService.set(menu, rect);
+const updateTitle = (title: string) => updateActiveNote({title, lastupdated: new Date().valueOf()});
+
+const updateContent = (body: string) => updateActiveNote({body, lastupdated: new Date().valueOf()});
+
+const saveClose =  () => {
+  toast('Save');
+  if (activeNote.value) readOnlyDB.value?.has(activeNote.value.id) ? updateNote(activeNote.value) : setNote(activeNote.value); 
+  clearActiveNote();
+  dialogService.close();
 }
-const makeScratchNote = () => {}
+
+const noSaveClose = () => {
+  toast('Note left unchanged');
+  clearActiveNote();
+  dialogService.close()
+}
+
+const removeClose = () => {
+  toast('Note Deleted');
+  if (activeNote.value && readOnlyDB.value?.has(activeNote.value.id)) removeNote(activeNote.value.id);
+  clearActiveNote();
+  dialogService.close();
+}
+
+const closeNoteAsk = () => {
+  if (readOnlyDB.value?.size && activeNote.value && !noteHasChanged(readOnlyDB.value, activeNote.value)) return clearActiveNote();
+  dialogService.open('Save Note?', '', [
+    { name: 'Yes',  action: saveClose },
+    { name: 'No', action: noSaveClose },
+    { name: 'Cancel', action: () => dialogService.close() }
+  ]);
+}
+const closeNoteSave = saveClose;
+
+const deleteNote = () => {
+  dialogService.open('Delete note?', '',[
+    { name: 'Yes', action: removeClose },
+    { name: 'No', action: dialogService.close }
+  ])
+}
+
+const setLetterSize = () => {
+  menuService.set([
+    { label: 'Larger', action: () => document.body.parentElement?.setAttribute('style', 'font-size: larger') },
+    { label: 'Large', action: () => document.body.parentElement?.setAttribute('style', 'font-size: large') },
+    { label: 'Medium', action: () => document.body.parentElement?.setAttribute('style', 'font-size: medium')},
+    { label: 'Small', action: () => document.body.parentElement?.setAttribute('style', 'font-size: small') }
+  ]);
+}
+
+const noteMenu = () => menuService.set([
+  {
+    label: 'Letter size',
+    icon: Icon.LetterSize,
+    action: setLetterSize
+  }, {
+    label: 'Remove',
+    icon: Icon.Remove,
+    action: deleteNote
+  },
+]);
+
+const toggleScratchPad = () => scratchPadActive.value = !scratchPadActive.value;
+
+const makeScratchNote = () => {
+  newActiveNote()
+  updateActiveNote({ body: scratchNote.value, title: 'Scratch note' });
+  menuService.close();
+  toggleScratchPad();
+}
+
+const clearScratchPad = () => {
+  scratchNote.value = '';
+  setTimeout(() => scratchNote.value = '', 500);
+  menuService.close();
+}
+
+const scratchMenu = () => menuService.set([
+  { label: 'Make into a note', action: makeScratchNote },
+  { label: 'Clear scratch pad', action: clearScratchPad }
+])
+
+
 </script>
 
 <template>
@@ -97,22 +119,23 @@ const makeScratchNote = () => {}
     <DayInfo />
     <NoteList
       :user-id="props.userId"
-      :database="database"
+      :database="readOnlyDB"
+      @set-letter-size="setLetterSize"
     />
-   
     <ScratchPad
-      v-model:body="scratch"
-      @display:contextmenu="scratchMenu"
-      @action:make-note="makeScratchNote"
+      v-model:body="scratchNote"
+      v-model:active="scratchPadActive"
+      @display:scratch-context-menu="scratchMenu"
+      @toggle-scratch="toggleScratchPad"
     />
     <Note
       v-if="activeNote?.id"
       v-bind="activeNote"
       @update:title="updateTitle"
       @update:body="updateContent"
-      @noteOptions="deleteNote"
       @close:ask="closeNoteAsk"
       @close:save="closeNoteSave"
+      @display:options="noteMenu"
     />
   </div>
 </template>

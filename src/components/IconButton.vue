@@ -1,36 +1,12 @@
 <script setup lang="ts">
-import { Icon, IconType } from '@/types/sharedTypes';
-import Add from '@/components/Icon.Add.vue';
-import Arrow from '@/components/Icon.Arrow.vue';
-import List from '@/components/Icon.List.vue';
-import Options from '@/components/Icon.Options.vue'
-import Remove from '@/components/Icon.Remove.vue';
-import Settings from '@/components/Icon.Settings.vue';
-import OK from '@/components/Icon.OK.vue';
-import LetterSize from '@/components/Icon.LetterSize.vue';
-import Logout from '@/components/Icon.Logout.vue';
+import { Icon as IconType, ButtonType } from '@/types/enums';
+import Icon from '@/components/icons/Icon.vue';
 
 const props = defineProps<{
-  type: IconType;
-  icon: Icon;
-  action: () => void;
-}>()
-
-const i = {
-  [Icon.Add]: Add,
-  [Icon.Down]: Arrow,
-  [Icon.Cancel]: Remove,
-  [Icon.Remove]: Remove,
-  [Icon.Left]: Arrow,
-  [Icon.List]: List,
-  [Icon.Options]: Options,
-  [Icon.Right]: Arrow,
-  [Icon.Setting]: Settings,
-  [Icon.Up]: Arrow,
-  [Icon.OK]: OK,
-  [Icon.LetterSize]: LetterSize,
-  [Icon.LogOut]: Logout,
-}
+  type: ButtonType;
+  icon: IconType;
+  action: (e: Event) => void;
+}>();
 
 </script>
 
@@ -40,10 +16,7 @@ const i = {
     @click="props.action"
   >
     <div :class="['bkg', props.type]">
-      <component
-        :is="i[props.icon]"
-        :class="['icn', props.icon]"
-      />
+      <Icon :icon="props.icon" />
     </div>
   </button>
 </template>
@@ -71,10 +44,5 @@ const i = {
       fill: var(--n-500);
       border: 1px solid var(--n-300);
     }
-  }
-  .icn {
-    &.up { transform: rotate(270deg); }
-    &.left { transform: rotate(180deg); }
-    &.donw { transform: rotate(90deg); }
   }
 </style>
