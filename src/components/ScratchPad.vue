@@ -1,50 +1,79 @@
 <script setup lang="ts">
 import IconButton from '@/components/IconButton.vue';
-import { Icon, ButtonType } from '@/types/enums';
-import { debounce } from '@/utils/sharedUtils';
+import { IconEnum, ButtonEnum } from '@/types/enums';
+import { debounce, newNote } from '@/utils/sharedUtils';
+import { ref, watchEffect } from 'vue';
+import { menuService } from '@/services/contextMenuService';
+import { useActiveNoteStore } from '@/store/activeNoteStore';
+import { useScratchStore } from '@/store/scratchStore';
 
-const emit = defineEmits<{
-  (e:'display:scratch-context-menu'): void,
-  (e: 'toggleScratch'): void
-}>();
+const store = useScratchStore();
+const content = ref('');
+const active = ref(false);
 
-const modelBody = defineModel<string>('body');
-const modelActive = defineModel<boolean>('active');
+watchEffect(async () => {
+  const prev = await store.fetchScratch();
+  content.value = prev?.content ?? '';
+})
 
-const update = (bodyValue: Event) => modelBody.value = (bodyValue.target as HTMLTextAreaElement).value;
-const lazyUpdate = debounce((bodyValue: Event) => update(bodyValue), 500)
+const update = (scratch: Event) => {
+  content.value = (scratch.target as HTMLTextAreaElement).value;
+  store.updateScratch(content.value);
+}
 
-const openContextMenu = (e: Event) => { e.stopPropagation(); emit('display:scratch-context-menu') }
+const lazyUpdate = debounce((scratch: Event) => update(scratch), 500)
 
-const toggle = () => emit('toggleScratch');
+const toggleScratchPad = () => active.value = !active.value;
+
+const clearScratchPad = () => {
+  content.value = '';
+
+  store.updateScratch('');
+  menuService.close();
+}
+
+const makeNote = () => {
+  const note = newNote({ content: content.value });
+  useActiveNoteStore().setActiveNote(note);
+  toggleScratchPad();
+  menuService.close();
+}
+
+const scratchMenu = (e: Event) => {
+  e.stopPropagation();
+  menuService.set([
+  { label: 'Make into a note', action: makeNote },
+  { label: 'Clear scratch pad', action: clearScratchPad }
+]);
+}
 
 </script>
 
 <template>
-  <div :class="['scratch-pad', { 'active': modelActive }]">
+  <div :class="['scratch-pad', { 'active': active }]">
     <div
       class="scratch-pad-header"
-      @click="toggle"
+      @click="toggleScratchPad"
     >
       <label class="header">Scratch pad</label>
       <div class="scratch-pad-options">
         <IconButton
           class="options-icon"
-          :type="ButtonType.Border"
-          :icon="Icon.Options"
-          :action="openContextMenu"
+          :type="ButtonEnum.Border"
+          :icon="IconEnum.Options"
+          :action="scratchMenu"
         />
         <IconButton
           class="arrow-icon"
-          :type="ButtonType.Border"
-          :icon="Icon.Up"
+          :type="ButtonEnum.Border"
+          :icon="IconEnum.Up"
           :action="() => {}"
         />
       </div>
     </div>
     <textarea
       class="scratch-pad-area"
-      :value="modelBody"
+      :value="content"
       @blur="update"
       @input="lazyUpdate"
     ></textarea>

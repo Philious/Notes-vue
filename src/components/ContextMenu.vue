@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import menuService from '@/services/contextMenuService';
+import { menuService } from '@/services/contextMenuService';
 
 </script>
 

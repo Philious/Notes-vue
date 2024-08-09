@@ -1,16 +1,24 @@
-export enum Page {
-  LOGIN = '/login',
-  MAIN = '/main',
-  REDIRECT = "/"
+export enum PageEnum {
+  LOGIN = 'login',
+  MAIN = 'main',
+  NEW = 'new_user',
+  FORGOT = 'forgot_password'
 }
 
-export enum ButtonType {
+export enum NetworkStatus {
+  IDLE = 'idle',
+  LOADING = 'loading',
+  SUCCSESS = 'succeeded',
+  FAILED = 'failed'
+}
+
+export enum ButtonEnum {
   Default = 'default',
   Filled = 'filled',
   Border = 'border'
 }
 
-export enum Icon {
+export enum IconEnum {
   Add = 'add',
   Cancel = 'cancel',
   Up = 'up',

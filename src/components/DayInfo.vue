@@ -6,8 +6,9 @@ import midday from '@/assets/images/midday.png';
 import afternoon from '@/assets/images/afternoon.png';
 import evening from '@/assets/images/evening.png';
 import IconButton from './IconButton.vue';
-import { Icon, ButtonType, Page } from '@/types/enums';
-import router from '@/router/router';
+import { IconEnum, ButtonEnum, PageEnum } from '@/types/enums';
+import { userAPI } from '@/api/userAPI';
+import { useUserStore } from '@/store/userStore';
 
 const timeOfDay = ref<{ greeting: string, img: any }>({greeting: '', img: ''});
 const img = ref('');
@@ -62,9 +63,9 @@ onUnmounted(() => clearTimeout(timeout));
     </div>
     <IconButton
       class="logout"
-      :type="ButtonType.Default"
-      :icon="Icon.LogOut"
-      :action="() => router.push({name: Page.LOGIN })"
+      :type="ButtonEnum.Default"
+      :icon="IconEnum.LogOut"
+      :action="() => useUserStore().logout()"
     />
   </div>
 </template>
@@ -108,11 +109,9 @@ onUnmounted(() => clearTimeout(timeout));
       font-size: .625rem;
     }
     .logout {
-      fill: var(--white);
       position: absolute;
       top: .5rem;
       right: .5rem;
-      filter: var(--shadow); 
     }
   }
 </style>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Icon as IconType, ButtonType } from '@/types/enums';
+import { IconEnum, ButtonEnum } from '@/types/enums';
 import Icon from '@/components/icons/Icon.vue';
 
 const props = defineProps<{
-  type: ButtonType;
-  icon: IconType;
+  type: ButtonEnum;
+  icon: IconEnum;
   action: (e: Event) => void;
 }>();
 
@@ -29,6 +29,12 @@ const props = defineProps<{
     place-content: center;
     background-color: transparent;
     border: none;
+    transition: filter .25s;
+    @include tabletUp() {
+      &:hover {
+        filter: brightness(2);
+      }
+    }
   }
   .bkg {
     display: grid;

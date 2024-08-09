@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import googleG from '@/assets/images/GoogleG.svg'
 import IconButton from '@/components/IconButton.vue';
-import { passwordSignIn, redirectSignIn, newUser, forgotPassword } from '@/store/firebaseStore';
-import { Icon, ButtonType } from '@/types/enums';
+import { goto } from '@/router/router';
+import { useUserStore } from '@/store/userStore';
+import { IconEnum, ButtonEnum, PageEnum } from '@/types/enums';
 import { ref } from 'vue';
 
-const username = ref<string>('');
-const password = ref<string>(''); 
+const email = ref<string>('test@test.test');
+const password = ref<string>('test1234');
 
 </script>
 
 <template>
   <div class="login-view">
     <h1 class="title">
-      Notes
+      Register
     </h1>
     <input
       class="input-field name"
       value="test@test.test"
       placeholder="user name"
-      @input="(ev: Event) => username = (ev.target as HTMLInputElement).value"
+      @input="(ev: Event) => email = (ev.target as HTMLInputElement).value"
     />
     <input
       class="input-field password"
@@ -29,30 +29,15 @@ const password = ref<string>('');
     />
     <IconButton
       class="login-btn"
-      :type="ButtonType.Filled"
-      :icon="Icon.Right"
-      :action="() => passwordSignIn(username, password)"
+      :type="ButtonEnum.Filled"
+      :icon="IconEnum.Right"
+      :action="() => useUserStore().register(email, password)"
     />
     <button
       class="vertical txt-btn new"
-      @click="newUser"
+      @click="() => goto(PageEnum.LOGIN)"
     >
-      New user
-    </button>
-    <button
-      class="vertical txt-btn forgot"
-      @click="forgotPassword"
-    >
-      Forgot<br>password
-    </button>
-    <button
-      class="google-login"
-      @click="redirectSignIn"
-    >
-      <img
-        :src="googleG"
-        class="google-icon"
-      />
+      Back
     </button>
   </div>
 </template>

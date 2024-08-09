@@ -1,33 +1,67 @@
 <script setup lang="ts">
-import { Note } from '@/types/types';
-import { Icon, ButtonType } from '@/types/enums';
-import { ref } from 'vue';
+import { NoteProps } from '@/types/types';
+import { IconEnum, ButtonEnum } from '@/types/enums';
+import { ref, watch } from 'vue';
 import IconButton from './IconButton.vue';
-import { dateFormat } from '@/utils/sharedUtils';
+import { dateFormat, noteHasChanged } from '@/utils/sharedUtils';
+import { useNoteStore } from '@/store/noteStore';
+import { dialogService } from '@/services/dialogService';
 
-const props = defineProps<Note>();
+const props = defineProps<{activeNote: Readonly<NoteProps>}>();
 
+const noteStore = useNoteStore();
+
+const { updateNote, addNote, notes } = noteStore;
 const emit = defineEmits<{
-  (e: 'update:title', value: string): void;
-  (e: 'update:body', value: string): void;
-  (e: 'close:ask'): void;
-  (e: 'close:save'): void;
-  (e: 'display:options'): void;
+  (e: 'close'): void,
+  (e: 'display:options', id: string): void;
 }>();
 
-const title = ref<HTMLElement | undefined>();
-const titleValue = ref(props.title);
-const bodyValue = ref(props.body);
+const titleRef = ref<HTMLElement | undefined>();
+const contentRef = ref<HTMLElement | undefined>();
 
-const titleUpdate = (event: Event) => emit('update:title', (event.target as HTMLInputElement).value);
+const title = ref(props.activeNote.title);
+const content = ref(props.activeNote.content);
 
-const contentUpdate = (event: Event) => emit('update:body', (event.target as HTMLTextAreaElement).value);
+watch(() => props.activeNote, () => {
+  title.value = props.activeNote.title;  
+  content.value = props.activeNote.content;
+});
 
-const closeAndAsk = () => emit('close:ask');
+const titleUpdate = (event: Event) => title.value = (event.target as HTMLInputElement).value;
+const contentUpdate = (event: Event) => content.value = (event.target as HTMLTextAreaElement).value;
 
-const closeAndSave = () => emit('close:save');
+const close = () => {
+  dialogService.close()
+  emit('close');
+}
 
-const options = () => emit('display:options');
+const closeAndAsk = () => {
+  const hasChanged = noteHasChanged({ ...props.activeNote, title: title.value, content: content.value }, props.activeNote);
+
+  if (!hasChanged) {
+    close();
+    return;
+  }
+  dialogService.open('Save Note?', '', [
+    { name: 'Yes',  action: closeAndSave },
+    { name: 'No', action: close },
+    { name: 'Cancel', action: () => dialogService.close() }
+  ]);
+}
+
+const closeAndSave = async() => {
+  const note = {...props.activeNote, title: title.value, content: content.value };
+
+  if(note.id === 'new') {
+    await addNote(note);
+  } else {
+    await updateNote(note as NoteProps);
+  }
+  close();
+}
+
+const options = () => emit('display:options', props.activeNote.id);
 
 </script>
 
@@ -38,21 +72,21 @@ const options = () => emit('display:options');
   >
     <div class="title-area">
       <input
-        ref="title"
-        v-model="titleValue"
+        ref="titleRef"
+        v-model="title"
         class="title"
         autofocus
         @input="titleUpdate"
       />
     </div>
     <div class="date">
-      <span>Created: {{ dateFormat(props.created) }}</span>
-      <span>Updated: {{ dateFormat(props.lastupdated) }}</span>
+      <span>Created: {{ dateFormat(props.activeNote.createdAt) }}</span>
+      <span>Updated: {{ dateFormat(props.activeNote.updatedAt) }}</span>
     </div>
     <div class="text-area-container">
       <textarea
-        ref="content"
-        v-model="bodyValue"
+        ref="contentRef"
+        v-model="content"
         class="text-area"
         @input="contentUpdate"
       ></textarea>
@@ -60,20 +94,20 @@ const options = () => emit('display:options');
     <div class="toolbar">
       <div class="toolbar-left-section">
         <IconButton
-          :type="ButtonType.Border"
-          :icon="Icon.Left"
+          :type="ButtonEnum.Border"
+          :icon="IconEnum.Left"
           :action="closeAndAsk"
         />
         <IconButton
-          :type="ButtonType.Border"
-          :icon="Icon.Check"
+          :type="ButtonEnum.Border"
+          :icon="IconEnum.Check"
           :action="closeAndSave"
         />
       </div>
       <div class="toolbar-right-section">
         <IconButton
-          :type="ButtonType.Border"
-          :icon="Icon.Options"
+          :type="ButtonEnum.Border"
+          :icon="IconEnum.Options"
           :action="options"
         />
       </div>

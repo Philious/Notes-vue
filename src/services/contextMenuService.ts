@@ -7,8 +7,9 @@ const useContenxtMenuService = () => {
   const set = (options: MenuOption[]) => {
     menuOptions.value = options;
   }
-  const close =  () => menuOptions.value = [];
+  const close = () => menuOptions.value = [];
+
   return reactive({ set, close, menuOptions, position });
 }
 
-export default useContenxtMenuService();
+export const menuService = useContenxtMenuService();

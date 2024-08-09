@@ -3,7 +3,7 @@ import { createApp, h } from "vue";
 
 export default (message: string, options?: ToastOptions) => {
   const el = document.getElementById('overlays') ?? document.createElement('div');
-  if(!document.getElementById('overlays')) document.body.appendChild(el);
+  if (!document.getElementById('overlays')) document.body.appendChild(el);
   el.setAttribute('id', 'overlays');
   el.setAttribute('style', 'position: fixed; bottom: 0; width: 100vw; display:flex; flex-direction: column; ');
 
@@ -13,7 +13,7 @@ export default (message: string, options?: ToastOptions) => {
   el.appendChild(app);
   const transitionDuration = options?.transitionDuration ?? 300;
   const duration = options?.duration ?? 2000;
-  
+
   const style = `
   @keyframes toggleShow {
     from {
@@ -34,7 +34,7 @@ export default (message: string, options?: ToastOptions) => {
     padding: .5rem 1rem;
     white-space: break-spaces;
     border-radius: .25rem;
-    text-align: ${options?.align ?? 'center' };
+    text-align: ${options?.align ?? 'center'};
     min-width:50vw;
     width: fit-content;
     margin: auto;
@@ -51,7 +51,7 @@ export default (message: string, options?: ToastOptions) => {
   }
   `;
 
-  
+
 
   const remove = () => {
     setTimeout(() => {
@@ -65,11 +65,11 @@ export default (message: string, options?: ToastOptions) => {
       return [
         h('style', style),
         h('div', { class: 'toast' }, [
-          h('div',  [message])
+          h('div', [message])
         ])
       ];
     }
-  });  
+  });
 
   appInstance.mount(app);
 

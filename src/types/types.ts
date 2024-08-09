@@ -1,59 +1,81 @@
-import { Icon } from "@/types/enums";
+import { IconEnum, ButtonEnum } from "./enums";
 
-export type UserData = {
-  username: string;
-  token: string;
-}
-
-export type Note = {
+export type NoteProps = {
   id: string;
   title: string;
-  body: string;
-  lastupdated: number;
-  created: number;
+  content: string;
+  catalog: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type MenuOption = {
+export type LoginProps = {
+  email: string;
+  password: string;
+  username?: string;
+}
+
+export type UserProps = {
+  id: string,
+  username: string | null,
+  email: string,
+  createdAt: string
+}
+
+export type ScratchpadProps = {
+  content: string;
+  updatedAt: string;
+}
+
+export type DBResponse<T> = {
+  data: T,
+  status: number
+}
+
+export type ContextMenuItemProps = {
   label: string,
-  icon?: Icon,
+  icon?: IconEnum;
+  keepOpen?: boolean;
   action: () => void
 }
 
-export type DataBaseNotes = Map<string, Note>
-
-export type Tab = {
-  id: string;
-  label: string;
-  icon: string;
-  action: () => void
-}
+export type DataBaseNotes = Record<string, NoteProps>
 
 export type ToastOptions = {
-  id?: string;
+  id?: string,
   duration?: number;
   transitionDuration?: number;
   align?: 'left' | 'center' | 'right';
 }
 
-export type ActiveNoteFunctions = {
-  getActiveNote: () => Note | undefined;
-  setActiveNote: (note: Note) => void;
-  updateActiveNote: (note: Partial<Note>) => void;
-  clearActiveNote: () => void;
-  newActiveNote: (note?: Partial<Note>) => void;
+export type Tab = {
+  id: string;
+  label: string;
+  icon?: IconEnum;
+  action: () => void;
 }
 
-export type AlterLoginStateCalls = {
-  redirectSignIn: () => void;
-  passwordSignIn: (name: string, password: string) => void;
-  logout: () => void;
-  forgotPassword: () => void;
-  newUser: () => void;
+export type MenuOption = {
+  label: string,
+  action: () => void;
+  icon?: IconEnum;
 }
 
-export type DatabaseCalls = {
-  getAllNotes: () => void;
-  setNote: (note: Note) => void;
-  updateNote: (note: Note) => void;
-  removeNote: (noteId: string) => void;
+export type DialogActionProps = {
+  name: string;
+  action: () => void;
+  closeOnAction?: boolean;
+}
+
+export type DialogProps = {
+  title: string,
+  content: string,
+  actions: DialogActionProps[]
+}
+
+export type IconButtonProps = {
+  type: ButtonEnum;
+  icon: IconEnum;
+  action: () => void;
 }

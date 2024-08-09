@@ -10,7 +10,9 @@
     "check": "vue-tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
+    "axios": "^1.7.3",
     "firebase": "^10.10.0",
+    "pinia": "^2.2.1",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"
   },
@@ -28,7 +30,7 @@
     "typescript": "^5.4.4",
     "vite": "^5.2.8",
     "vite-plugin-dynamic-import": "^1.5.0",
-    "vue-component-type-helpers": "^2.0.12",
+    "vue-component-type-helpers": "^2.0.29",
     "vue-tsc": "^2.0.12"
   }
 }
