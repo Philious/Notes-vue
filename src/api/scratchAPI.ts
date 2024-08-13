@@ -1,7 +1,9 @@
-import { DBResponse, ScratchpadProps } from "@/types/types";
+import { DBResponse, ScratchAPI, ScratchpadProps } from "@/types/types";
 import { backend } from "@/api/api";
 
-export const scratchAPI = {
+
+
+export const scratchAPI: ScratchAPI = {
   fetch: async (): Promise<ScratchpadProps | null> => {
     try {
       const response = await backend.get<ScratchpadProps>('Scratchpad');

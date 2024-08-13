@@ -1,10 +1,7 @@
-import { LoginProps, UserProps } from '@/types/types';
+import { LoginProps, UserAPI, UserProps } from '@/types/types';
 import { backend } from '@/api/api';
-import { AxiosResponse } from 'axios';
 
-export type ReturnType<T> = Promise<AxiosResponse<T, any> | null>
-
-export const userAPI = {
+export const userAPI: UserAPI = {
   register: async (payload: LoginProps): Promise<UserProps | null> =>
     backend.post<UserProps>('Users/register', payload)
       .then((response) => response.data)
@@ -12,6 +9,14 @@ export const userAPI = {
         console.error(error);
         return null;
       }),
+  getUser: async (): Promise<UserProps | null> => {
+    return backend.get<UserProps>('Users')
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error(error);
+        return null;
+      });
+  },
   login: async (payload: LoginProps): Promise<UserProps | null> =>
     backend.post<UserProps>('Users/login', payload)
       .then((response) => response.data)

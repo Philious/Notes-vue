@@ -1,9 +1,9 @@
-import { NoteProps } from "@/types/types";
+import { NoteAPI, NoteProps } from "@/types/types";
 import { backend } from "@/api/api";
 
 
 
-export const noteAPI = {
+export const noteAPI: NoteAPI = {
   fetchAll: async (): Promise<NoteProps[] | null> => {
     try {
       const response = await backend.get<NoteProps[]>('Notes');

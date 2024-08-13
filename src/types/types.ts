@@ -79,3 +79,23 @@ export type IconButtonProps = {
   icon: IconEnum;
   action: () => void;
 }
+
+export type NoteAPI = {
+  fetchAll: () => Promise<NoteProps[] | null>;
+  add: (note: NoteProps) => Promise<NoteProps | null>;
+  update: (note: Partial<NoteProps> & { id: string; }) => Promise<number | null>;
+  remove: (noteId: string) => Promise<number | null>;
+}
+
+export type ScratchAPI = {
+  fetch: () => Promise<ScratchpadProps | null>;
+  update: (content: string) => Promise<number | null>;
+}
+
+export type UserAPI = {
+  register: (payload: LoginProps) => Promise<UserProps | null>;
+  getUser: () => Promise<UserProps | null>;
+  login: (payload: LoginProps) => Promise<UserProps | null>;
+  logout: () => Promise<number | null>;
+  checkAuthentication: () => Promise<boolean>;
+}
