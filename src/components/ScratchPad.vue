@@ -84,7 +84,7 @@ const scratchMenu = (e: Event) => {
   .scratch-pad {
     background-color: #000;
     display: grid;
-    grid-template-rows: 48px 1fr;
+    grid-template-rows: var(--toolbar-height) 1fr;
     grid-area: var(--scratch-area);
     padding-bottom: 2rem;
     position: fixed;
@@ -111,7 +111,7 @@ const scratchMenu = (e: Event) => {
   }
   .scratch-pad-header {
     box-sizing: border-box;
-    height: 3rem;
+    height: var(--toolbar-height);
     padding: 0 .5rem 0 1rem;
     width: 100%;
     display: flex;

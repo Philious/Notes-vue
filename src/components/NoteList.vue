@@ -5,6 +5,7 @@ import { IconEnum, ButtonEnum } from '@/types/enums';
 
 import { useNoteStore } from '@/store/noteStore';
 import { useActiveNoteStore } from '@/store/activeNoteStore';
+import { menuService } from '@/services/contextMenuService';
 
 const noteStore = useNoteStore();
 const activeNoteStore = useActiveNoteStore();
@@ -17,6 +18,19 @@ const setActive = (id: string) => {
   setActiveNote(note);
 }
 
+const updateAppFontSize = (size: number) => {
+  document.documentElement.style.setProperty("--app-font-size", `${size}px`);
+  menuService.close();
+}
+
+const changeLetterSize = () => {
+  menuService.set([
+    { label: 'Large',  action: () => updateAppFontSize(22) },
+    { label: 'Normal', action: () => updateAppFontSize(16) },
+    { label: 'Small', action: () => updateAppFontSize(12) }
+  ]);
+};
+
 </script>
 
 <template>
@@ -27,7 +41,7 @@ const setActive = (id: string) => {
         <IconButton
           :type="ButtonEnum.Border"
           :icon="IconEnum.LetterSize"
-          :action="newActiveNote"
+          :action="changeLetterSize"
         />
         <IconButton
           :type="ButtonEnum.Border"
