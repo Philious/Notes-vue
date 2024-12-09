@@ -2,10 +2,7 @@ import { createMemoryHistory, createRouter, RouteRecordRaw } from 'vue-router'
 
 import MainView from '@/pages/MainPage.vue'
 import { PageEnum } from '@/types/enums';
-import NewUserPage from '@/pages/NewUserPage.vue';
 import LoginPage from '@/pages/LoginPage.vue';
-import ForgotPage from '@/pages/ForgotPage.vue';
-
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -15,14 +12,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login',
     name: PageEnum.LOGIN,
     component: LoginPage
-  }, {
-    path: '/new',
-    name: PageEnum.NEW,
-    component: NewUserPage
-  }, {
-    path: '/forgot',
-    name: PageEnum.FORGOT,
-    component: ForgotPage
   }, {
     path: '/main/:userId?',
     name: PageEnum.MAIN,

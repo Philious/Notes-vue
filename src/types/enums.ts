@@ -5,6 +5,13 @@ export enum PageEnum {
   FORGOT = 'forgot_password'
 }
 
+export enum InputState {
+  Default = 'default',
+  Disabled = 'disabled',
+  Ok = 'ok',
+  Error = 'error'
+}
+
 export enum NetworkStatus {
   IDLE = 'idle',
   LOADING = 'loading',
@@ -15,7 +22,8 @@ export enum NetworkStatus {
 export enum ButtonEnum {
   Default = 'default',
   Filled = 'filled',
-  Border = 'border'
+  Border = 'border',
+  Text = 'text'
 }
 
 export enum IconEnum {

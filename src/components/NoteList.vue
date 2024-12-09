@@ -4,18 +4,19 @@ import NoteListItem from '@/components/NoteListItem.vue';
 import { IconEnum, ButtonEnum } from '@/types/enums';
 
 import { useNoteStore } from '@/store/noteStore';
-import { useActiveNoteStore } from '@/store/activeNoteStore';
 import { menuService } from '@/services/contextMenuService';
+import { newNote } from '@/utils/sharedUtils';
 
 const noteStore = useNoteStore();
-const activeNoteStore = useActiveNoteStore();
 
 const { notes, getNote } = noteStore;
-const { setActiveNote, newActiveNote } = activeNoteStore;
 
 const setActive = (id: string) => {
-  const note = getNote(id)!;
-  setActiveNote(note);
+  noteStore.activeNote = getNote(id);
+}
+
+const newActiveNote = () => {
+  noteStore.activeNote = newNote();
 }
 
 const updateAppFontSize = (size: number) => {

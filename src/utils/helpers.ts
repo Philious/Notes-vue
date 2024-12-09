@@ -1,10 +1,4 @@
-import Loading from "@/components/Loading.vue";
-import { goto } from "@/router/router";
 import { menuService } from "@/services/contextMenuService";
-import { useNoteStore } from "@/store/noteStore";
-import { useUserStore } from "@/store/userStore";
-import { PageEnum } from "@/types/enums";
-import { defineAsyncComponent } from "vue";
 
 export const setLetterSize = () => {
   menuService.set([
@@ -14,7 +8,8 @@ export const setLetterSize = () => {
     { label: 'Small', action: () => document.body.parentElement?.setAttribute('style', 'font-size: small') }
   ]);
 }
-type Color = `hsl(${number}, ${number}%, ${number}%)` | `rgb(${number}, ${number}, ${number}})` | `#${string}`
+
+export type Color = `hsl(${number}, ${number}%, ${number}%)` | `rgb(${number}, ${number}, ${number}})` | `#${string}`
 export const colorConsole = (msg: string, color: Color) => {
   console.log("%c" + msg, "color:" + color + ";font-weight:bold;");
 }

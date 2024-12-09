@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import { IconEnum } from '@/types/enums';
-import Add from '@/components/icons/Add.vue';
-import Arrow from '@/components/icons/Arrow.vue';
-import List from '@/components/icons/List.vue';
-import Options from '@/components/icons/Options.vue'
-import Remove from '@/components/icons/Remove.vue';
-import Settings from '@/components/icons/Settings.vue';
-import Check from '@/components/icons/Check.vue';
-import LetterSize from '@/components/icons/LetterSize.vue';
-import Logout from '@/components/icons/Logout.vue';
-import { DefineComponent } from 'vue';
+import Add from '@/components/icons/AddIcon.vue';
+import Arrow from '@/components/icons/ArrowIcon.vue';
+import List from '@/components/icons/ListIcon.vue';
+import Options from '@/components/icons/OptionsIcon.vue'
+import Remove from '@/components/icons/RemoveIcon.vue';
+import Settings from '@/components/icons/SettingsIcon.vue';
+import Check from '@/components/icons/CheckIcon.vue';
+import LetterSize from '@/components/icons/LetterSizeIcon.vue';
+import Logout from '@/components/icons/LogoutIcon.vue';
 
 const props = defineProps<{
   icon: IconEnum;
 }>()
 
-const icons: Record<IconEnum, DefineComponent<{}, {}, any>> = {
+const icons: Record<IconEnum, typeof Add> = {
   [IconEnum.Add]: Add,
   [IconEnum.Down]: Arrow,
   [IconEnum.Cancel]: Remove,

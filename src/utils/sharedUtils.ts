@@ -1,9 +1,9 @@
-import { NoteProps } from "@/types/types";
+import { Note } from "@/types/types";
 
-export const throttle = <T extends any[]>(func: (...args: T) => void, limit: number): ((...args: T) => void) => {
+export const throttle = <T>(func: (...args: T[]) => void, limit: number): ((...args: T[]) => void) => {
   let inThrottle: boolean;
 
-  return function (...args: T) {
+  return function (...args: T[]) {
     if (!inThrottle) {
       func(...args);
       inThrottle = true;
@@ -15,10 +15,10 @@ export const throttle = <T extends any[]>(func: (...args: T) => void, limit: num
   };
 }
 
-export const debounce = <T extends any[]>(func: (...args: T) => void, delay: number): ((...args: T) => void) => {
+export const debounce = <T>(func: (...args: T[]) => void, delay: number): ((...args: T[]) => void) => {
   let timer: ReturnType<typeof setTimeout> | null = null;
 
-  return function (...args: T) {
+  return function (...args: T[]) {
     if (timer !== null) {
       clearTimeout(timer);
     }
@@ -32,12 +32,10 @@ export const dateFormat = (date: number | string) => new Date(date).toLocaleDate
 
 export const uid = (): string => Date.now().toString(36) + Math.random().toString(36).substr(2);
 
-export const noteHasChanged = (n1?: NoteProps, n2?: NoteProps) => n1 && n2 && (['title', 'content'] as (keyof NoteProps)[]).filter((k) => n1[k] !== n2[k]).length > 0;
-
-export const newNote = (note?: Partial<NoteProps>): NoteProps => {
-  const date = new Date().toJSON()
+export const newNote = (note?: Partial<Note>): Note => {
+  const date = new Date().toISOString()
   return {
-    id: 'new',
+    id: '',
     title: '',
     content: '',
     catalog: '',
@@ -47,3 +45,14 @@ export const newNote = (note?: Partial<NoteProps>): NoteProps => {
     ...(note ?? {})
   }
 };
+
+export const getCookie = (name: string): string | undefined => {
+  const cookieString: string = document.cookie || "";
+  const cookies: Record<string, string> = cookieString.split("; ").reduce((acc, cookie) => {
+    const [key, value] = cookie.split("=");
+    acc[key] = value;
+    return acc;
+  }, {} as Record<string, string>);
+
+  return cookies[name];
+}

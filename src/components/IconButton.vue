@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { IconEnum, ButtonEnum } from '@/types/enums';
-import Icon from '@/components/icons/Icon.vue';
+import Icon from '@/components/icons/IconComponent.vue';
 
 const props = defineProps<{
   type: ButtonEnum;
@@ -13,7 +13,7 @@ const props = defineProps<{
 <template>
   <button
     class="btn"
-    @click="props.action"
+    @click="action"
   >
     <div :class="['bkg', props.type]">
       <Icon :icon="props.icon" />
@@ -23,16 +23,26 @@ const props = defineProps<{
 
 <style scoped lang="scss">
   .btn {
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    position: relative;
     display: grid;
     place-content: center;
     background-color: transparent;
     border: none;
     transition: filter .25s;
+    cursor: pointer;
+    &:before {
+      content: "";
+      width: 3rem;
+      height: 3rem;
+      position: absolute;
+      inset: -.25rem;
+      cursor: pointer;
+    }
     @include tabletUp() {
       &:hover {
-        filter: brightness(2);
+        filter: brightness(1.5);
       }
     }
   }

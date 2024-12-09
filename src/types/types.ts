@@ -1,6 +1,14 @@
 import { IconEnum, ButtonEnum } from "./enums";
 
 export type NoteProps = {
+  id?: string;
+  title: string,
+  content: string,
+  catalog: string,
+  tags: string[]
+}
+
+export type Note = {
   id: string;
   title: string;
   content: string;
@@ -16,11 +24,12 @@ export type LoginProps = {
   username?: string;
 }
 
-export type UserProps = {
-  id: string,
-  username: string | null,
+export type User = {
+  createdAt: string,
   email: string,
-  createdAt: string
+  notes: [],
+  password: string,
+  uuid: string,
 }
 
 export type ScratchpadProps = {
@@ -93,9 +102,9 @@ export type ScratchAPI = {
 }
 
 export type UserAPI = {
-  register: (payload: LoginProps) => Promise<UserProps | null>;
-  getUser: () => Promise<UserProps | null>;
-  login: (payload: LoginProps) => Promise<UserProps | null>;
+  register: (payload: LoginProps) => Promise<User | null>;
+  getUser: () => Promise<User | null>;
+  login: (payload: LoginProps) => Promise<User | null>;
   logout: () => Promise<number | null>;
   checkAuthentication: () => Promise<boolean>;
 }

@@ -3,4 +3,3 @@
 ## Used
 Vue
 Typescript
-Firebase

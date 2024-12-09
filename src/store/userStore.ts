@@ -1,38 +1,52 @@
-import { localUserAPI } from "@/api/localAPI";
-import { userAPI } from "@/api/userAPI";
-import { UserProps } from "@/types/types";
+
+import { User } from "@/types/types";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { useNoteStore } from "./noteStore";
-import { goto } from "@/router/router";
-import { PageEnum } from "@/types/enums";
+import { api } from "@/api/api";
+import { getCookie } from "@/utils/sharedUtils";
 
 export const useUserStore = defineStore('user', () => {
-  const api = import.meta.env.VITE_DATABASE === 'server' ? userAPI : localUserAPI;
-  const internalUser = ref<UserProps>();
+  const token = ref<string>('');
+  const loading = ref(true);
+  const internalUser = ref<User | null>(null);
   const user = computed(() => internalUser);
 
   const register = async (email: string, password: string) => {
-    const response = await api.register({ email, password });
+    loading.value = true;
+    const response = await api.createUser(email, password);
+    loading.value = false;
     if (response) {
       internalUser.value = response;
+
       return response;
     }
   };
+
   const login = async (email: string, password: string) => {
-    const response = await api.login({ email, password });
+    loading.value = true;
+    const response = await api.login(email, password);
+    loading.value = false;
     if (response) {
-      useNoteStore().getAllNotes();
-      goto(PageEnum.MAIN);
+      token.value = response;
     }
   };
+
+  const updatePassword = (email: string) => alert(`Not really sending anything to ${email}`)
+
   const logout = async () => {
-    const response = await api.logout();
-    if (response !== 200) {
-      console.error('Failed to logout')
-    }
-    goto(PageEnum.LOGIN);
+    await api.logout(token.value);
+    token.value = '';
   };
-  const checkAuthentication = api.checkAuthentication
-  return { user, register, login, logout, checkAuthentication }
+
+  const checkAuthentication = async () => {
+    const savedToken = getCookie("note-cookie");
+
+    if (savedToken) {
+      loading.value = true;
+      const isValid = await api.checkLoginStatus(savedToken);
+      loading.value = false;
+      if (isValid) token.value = savedToken
+    }
+  }
+  return { user, token, loading, register, login, logout, updatePassword, checkAuthentication }
 })

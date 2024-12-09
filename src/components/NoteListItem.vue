@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { NoteProps } from '@/types/types';
+import { Note } from '@/types/types';
 import { dateFormat } from '@/utils/sharedUtils';
 
-const props = defineProps<NoteProps>();
+const props = defineProps<Note>();
 const emits = defineEmits<{ (e:'setActiveNote', id: string): void }>();
 
 </script>
@@ -59,6 +59,7 @@ const emits = defineEmits<{ (e:'setActiveNote', id: string): void }>();
   .list-item-content {
     color: hsl(0, 0%, 64%);
     font-size: var(--list-item-font-size);
+    font-weight: 500;
     line-height: var(--list-item-line-height);
     max-height: calc(var(--list-item-line-height) * 4);
     overflow: hidden;
@@ -80,6 +81,7 @@ const emits = defineEmits<{ (e:'setActiveNote', id: string): void }>();
   .list-item-date {
     margin-top: .5rem;
     font-size: .625rem;
+    font-weight: 600;
     color: var(--n-400);
   }
 </style>

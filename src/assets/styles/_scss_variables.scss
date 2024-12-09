@@ -1,2 +1,6 @@
+@use 'variables' as vars;
+
 $easeInOutQuint: cubic-bezier(0.83, 0, 0.17, 1);
-$easeOutQuint: cubic-bezier(0.22, 1, 0.36, 1)
+$easeOutQuint: cubic-bezier(0.22, 1, 0.36, 1);
+
+$txtSmall: var(--txt-small);

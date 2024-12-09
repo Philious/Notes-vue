@@ -1,59 +1,61 @@
 <script setup lang="ts">
 
 import IconButton from '@/components/IconButton.vue';
-import { router, goto } from '@/router/router';
+import Button from '@/components/TextButton.vue'
+import TextField from '@/components/TextField.vue';
 import { useUserStore } from '@/store/userStore';
-import { IconEnum, ButtonEnum, PageEnum } from '@/types/enums';
+import { IconEnum, ButtonEnum } from '@/types/enums';
+import { InputElement } from '@/types/errorHandlingTypes';
+import { multiValidate, emailValidation, passwordValidation } from '@/utils/errorHandling';
 import { ref } from 'vue';
 
-const email = ref<string>('test@test.test');
-const password = ref<string>('test1234');
-
-const paswordLogin = async (email: string, password: string) => {
-  const response = await useUserStore().login(email, password);
-};
-const newUser = () => {
-  goto(PageEnum.NEW);
+enum State {
+  Login,
+  NewUser,
+  Forgot
 }
-const forgotPassword = () => goto(PageEnum.FORGOT);
 
+const { login, register, updatePassword} = useUserStore();
+
+const emailRef = ref<InputElement | null>(null);
+const passRef = ref<InputElement | null>(null);
+const pageState = ref<State>(State.Login);
+const email = ref<string>('conny@carneval.com');
+const password = ref<string>('1234†');
+
+const action = () => {
+  
+  const isValid = multiValidate([emailRef.value, passRef.value])
+  
+  if (!isValid) return;
+  if (pageState.value === State.Login) login(email.value, password.value)
+  else if (pageState.value === State.NewUser) register(email.value, password.value)
+  else if (pageState.value === State.Forgot) updatePassword(email.value)
+}
 </script>
 
 <template>
   <div class="login-view">
-    <h1 class="title">
-      Notes
-    </h1>
-    <input
-      class="input-field name"
-      value="test@test.test"
-      placeholder="user name"
-      @input="(ev: Event) => email = (ev.target as HTMLInputElement).value"
-    />
-    <input
-      class="input-field password"
-      placeholder="password"
-      value="test1234"
-      @input="(ev: Event) => { password = (ev.target as HTMLInputElement).value }"
-    />
+    <TransitionGroup name="title" tag="h1" class="title">
+      <span v-if="pageState === State.Login">Login to Notes</span>
+      <span v-if="pageState === State.NewUser">Register</span>
+      <span v-if="pageState === State.Forgot">Forgot password</span>
+    </TransitionGroup>
+    <TextField ref="emailRef" class="name" v-model="email" placeholder="user name" :validate="emailValidation"/>
+    <Transition name="input">
+      <TextField ref="passRef" v-if="pageState !== State.Forgot" class="password" v-model="password" placeholder="password" :validate="passwordValidation"/>
+    </Transition>
     <IconButton
-      class="login-btn"
+      :class="['action-btn', pageState === State.Forgot ? 'update-email-btn' : '']"
       :type="ButtonEnum.Filled"
       :icon="IconEnum.Right"
-      :action="() => paswordLogin(email, password)"
+      :action="action"
     />
-    <button
-      class="vertical txt-btn new"
-      @click="newUser"
-    >
-      New user
-    </button>
-    <button
-      class="vertical txt-btn forgot"
-      @click="forgotPassword"
-    >
-      Forgot<br>password
-    </button>
+    <TransitionGroup name="btn" tag="div" class="buttons">
+      <Button v-if="pageState !== State.Login" class="vertical back" :label="'Back'" :onClick="() => pageState = State.Login" :theme="ButtonEnum.Text" />
+      <Button  v-if="pageState === State.Login" class="vertical new" :label="'New user'" :onClick="() => pageState = State.NewUser" :theme="ButtonEnum.Text" />
+      <Button v-if="pageState === State.Login" class="vertical forgot" :label="`Forgot\npassword`" :onClick="() => pageState = State.Forgot" :theme="ButtonEnum.Text" />
+    </TransitionGroup>
   </div>
 </template>
 
@@ -68,58 +70,83 @@ const forgotPassword = () => goto(PageEnum.FORGOT);
     padding: 2rem;
     max-width: 20rem;
     margin: auto;
-    grid-template-rows: 1fr auto auto auto 1fr min-content;
-    grid-template-columns: 3rem 1fr 3.5rem;
+    grid-template-rows: 1fr repeat(3, min-content) 1fr min-content;
+    grid-template-columns: 1fr 3.5rem;
     place-items: center start;
     
     .title { grid-area: 2 / 1 / 3 / 2 }
-    .name { grid-area: 3 / 1 / 4 / 3; }
-    .password { grid-area: 4 / 1 / 5 / 3; }
-    .login-btn { grid-area: 4 / 3 / 5 / 4; }
-    .new { grid-area: 6 / 1 / 7 / 2; }
-    .forgot { grid-area: 6 / 2 / 7 / 3; }
-    .google-login { grid-area: 6 / 3 / 7 / 4; }
+    .name { grid-area: 3 / 1 / 4 / 2; }
+    .password { grid-area: 4 / 1 / 5 / 2; }
+    .action-btn { grid-area: 4 / 3 / 5 / 2; }
+    .buttons { grid-area: 6 / 1 / 7 / 3; }
+    .update-email-btn { transform: translateY(calc(-100% - .75rem)) }
   }
   .title {
     font-size: 0.875rem;
     font-weight: 400;
+    white-space: nowrap;
+    height: 1.3125rem;
+    transform-style: preserve-3d;
+    perspective: 40rem;
+    span {
+      position: absolute;
+      transform-origin: 0 .75rem;
+    }
   }
-  .input-field {
-    background-color: var(--n-100);
-    border: 0.0625rem solid var(--n-300);
-    color: var(--n-500);
-    border-radius: 0.125rem;
-    padding: 0 1rem;
-    height: 2.25rem;
+  .password,
+  .name {
     width: 100%;
-    box-sizing: border-box;
   }
-  .login-btn { justify-self: end; }
-  .txt-btn {
-    background-color: transparent;
-    border: none;
-    color: var(--n-500);
-    text-align: left;
-    height: 3rem;
-    &.new { white-space: nowrap; }
+  .action-btn { justify-self: end; }
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 3rem);
+    position: relative;
+    height: 6rem;
+    width: 6rem;
+    justify-content: flex-start;
+    transform: scale(-1);
+    overflow: hidden;
+    transform-style: preserve-3d;
+    perspective: 40rem;
   }
   .vertical {
-    transform: rotate(270deg) translateY(100%);
-    transform-origin: left bottom;
-    align-self: end;
-  }
-  .google-login {
-    height: 3rem;
-    width: 3rem;
-    object-fit: cover;
-    border: none;
-    background-color: transparent;
-    display: grid;
-    place-content: center;
-    margin: 2rem auto 0;
-    .google-icon {
-      height: 3rem;
-      width: 3rem;
+    position: absolute;
+    writing-mode: vertical-rl;
+    transform-origin: top;
+    text-align: left;
+    height: 6rem;
+    top: 0;
+    &.back,
+    &.new {
+      right: -.75rem;
     }
+    &.forgot { right: 2.25rem;}
+  }
+
+  .action-btn,
+  .title-enter-active,
+  .title-leave-active,
+  .input-enter-active,
+  .btn-enter-active,
+  .input-leave-active,
+  .btn-move,
+  .btn-leave-active {
+    transition: 1s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-property: transform, opacity;
+  }
+
+  .title-leave-to,
+  .input-enter-from,
+  .input-leave-to {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+
+  .title-enter-from,
+  .btn-enter-from,
+  .btn-leave-to {
+    opacity: 0;
+    transform: translateY(-50%);
   }
 </style>

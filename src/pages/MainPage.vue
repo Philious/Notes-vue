@@ -2,29 +2,23 @@
 import NoteList from '@/components/NoteList.vue';
 import DayInfo from '@/components/DayInfo.vue';
 import ScratchPad from '@/components/ScratchPad.vue';
-import Note from '@/components/Note.vue';
+import Note from '@/components/ActiveNote.vue';
 import { dialogService } from '@/services/dialogService';
-import toast from '@/plugins/toast';
-import { Tab } from '@/types/types';
-import { noteHasChanged } from '@/utils/sharedUtils';
-import NoteIcon from '@/assets/icons/note.24px.svg'
-import ScratchIcon from '@/assets/icons/scratch.24px.svg';
+
 import { menuService } from '@/services/contextMenuService';
-import { ref } from 'vue';
+
 import { IconEnum } from '@/types/enums';
 import { setLetterSize } from '@/utils/helpers';
 import { useNoteStore } from '@/store/noteStore';
-import { useActiveNoteStore } from '@/store/activeNoteStore';
 
-const activeNoteStore = useActiveNoteStore();
-activeNoteStore;
+const noteStore = useNoteStore()
 
 const deleteNote = (id: string) => {
   dialogService.open('Delete note?', '',[
     { name: 'Yes', action: async () => {
-      useNoteStore().removeNote(id);
+      noteStore.removeNote(id);
       dialogService.close();
-      activeNoteStore.clearActiveNote();
+
     }},
     { name: 'No', action: dialogService.close }
   ])
@@ -51,9 +45,8 @@ const noteMenu = (id: string) => menuService.set([
     <ScratchPad />
     
     <Note
-      v-if="activeNoteStore.activeNote"
-      :activeNote="activeNoteStore.activeNote"
-      @close="activeNoteStore.clearActiveNote"
+      v-if="noteStore.activeNote"
+      @close="() => noteStore.activeNote = null"
       @display:options="(id: string) => noteMenu(id)"
     />
   </div>
@@ -63,12 +56,11 @@ const noteMenu = (id: string) => menuService.set([
   .main-page-container {
     display: flex;
     flex-direction: column;
+    box-shadow: 0.0625rem 0 0 var(--n-300);
     @include tabletUp {
       display: grid;
       grid-template-columns: var(--main-columns);
       grid-template-rows: var(--day-area-height) calc(100vh - var(--day-area-height));
     }
-    
-    box-shadow: 0.0625rem 0 0 var(--n-300);
   }
-</style>@/components/ScratchPad.vue
+</style>

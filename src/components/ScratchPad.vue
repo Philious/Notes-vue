@@ -2,39 +2,29 @@
 import IconButton from '@/components/IconButton.vue';
 import { IconEnum, ButtonEnum } from '@/types/enums';
 import { debounce, newNote } from '@/utils/sharedUtils';
-import { ref, watchEffect } from 'vue';
+import { ref } from 'vue';
 import { menuService } from '@/services/contextMenuService';
-import { useActiveNoteStore } from '@/store/activeNoteStore';
-import { useScratchStore } from '@/store/scratchStore';
+import { useNoteStore } from '@/store/noteStore';
 
-const store = useScratchStore();
-const content = ref('');
+const noteStore = useNoteStore();
 const active = ref(false);
+const content = ref(noteStore.scratchNote?.content ?? '');
 
-watchEffect(async () => {
-  const prev = await store.fetchScratch();
-  content.value = prev?.content ?? '';
-})
-
-const update = (scratch: Event) => {
-  content.value = (scratch.target as HTMLTextAreaElement).value;
-  store.updateScratch(content.value);
+const update = (ev: Event) => {
+  content.value = (ev.target as HTMLTextAreaElement).value;
 }
 
-const lazyUpdate = debounce((scratch: Event) => update(scratch), 500)
+const lazyUpdate = debounce((ev: Event) => update(ev), 500)
 
 const toggleScratchPad = () => active.value = !active.value;
 
 const clearScratchPad = () => {
   content.value = '';
-
-  store.updateScratch('');
   menuService.close();
 }
 
-const makeNote = () => {
-  const note = newNote({ content: content.value });
-  useActiveNoteStore().setActiveNote(note);
+const createNote = () => {
+  noteStore.createNote(newNote({content: content.value}))
   toggleScratchPad();
   menuService.close();
 }
@@ -42,9 +32,9 @@ const makeNote = () => {
 const scratchMenu = (e: Event) => {
   e.stopPropagation();
   menuService.set([
-  { label: 'Make into a note', action: makeNote },
-  { label: 'Clear scratch pad', action: clearScratchPad }
-]);
+    { label: 'Make into a note', action: createNote },
+    { label: 'Clear scratch pad', action: clearScratchPad }
+  ]);
 }
 
 </script>

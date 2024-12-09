@@ -1,31 +1,30 @@
 <script setup lang="ts">
 import { NoteProps } from '@/types/types';
 import { IconEnum, ButtonEnum } from '@/types/enums';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import IconButton from './IconButton.vue';
-import { dateFormat, noteHasChanged } from '@/utils/sharedUtils';
+import { dateFormat } from '@/utils/sharedUtils';
 import { useNoteStore } from '@/store/noteStore';
 import { dialogService } from '@/services/dialogService';
 
-const props = defineProps<{activeNote: Readonly<NoteProps>}>();
-
 const noteStore = useNoteStore();
+const { updateNote, createNote } = noteStore;
 
-const { updateNote, addNote, notes } = noteStore;
 const emit = defineEmits<{
   (e: 'close'): void,
   (e: 'display:options', id: string): void;
 }>();
 
-const titleRef = ref<HTMLElement | undefined>();
-const contentRef = ref<HTMLElement | undefined>();
+const title = ref('');
+const content = ref('');
+const createdDate = computed(() => noteStore.activeNote ? dateFormat(noteStore.activeNote.createdAt) : '');
+const updatedDate = computed(() => noteStore.activeNote ? dateFormat(noteStore.activeNote.updatedAt) : '');
 
-const title = ref(props.activeNote.title);
-const content = ref(props.activeNote.content);
-
-watch(() => props.activeNote, () => {
-  title.value = props.activeNote.title;  
-  content.value = props.activeNote.content;
+watch(() => noteStore.activeNote, (curr) => {
+  if (curr) {
+    title.value = curr.title;  
+    content.value = curr.content;
+  }
 });
 
 const titleUpdate = (event: Event) => title.value = (event.target as HTMLInputElement).value;
@@ -37,12 +36,13 @@ const close = () => {
 }
 
 const closeAndAsk = () => {
-  const hasChanged = noteHasChanged({ ...props.activeNote, title: title.value, content: content.value }, props.activeNote);
+  const hasChanged = noteStore.activeNote?.title !== title.value || noteStore.activeNote?.content !== content.value;
 
   if (!hasChanged) {
     close();
     return;
   }
+
   dialogService.open('Save Note?', '', [
     { name: 'Yes',  action: closeAndSave },
     { name: 'No', action: close },
@@ -51,17 +51,17 @@ const closeAndAsk = () => {
 }
 
 const closeAndSave = async() => {
-  const note = {...props.activeNote, title: title.value, content: content.value };
+  const note = {...noteStore.activeNote, title: title.value, content: content.value } as NoteProps;
 
-  if(note.id === 'new') {
-    await addNote(note);
+  if(note.id) {
+    await updateNote({ ...note, id: note.id });
   } else {
-    await updateNote(note as NoteProps);
+    await createNote(note);
   }
   close();
 }
 
-const options = () => emit('display:options', props.activeNote.id);
+const options = () => emit('display:options', noteStore.activeNote?.id ?? '');
 
 </script>
 
@@ -80,8 +80,8 @@ const options = () => emit('display:options', props.activeNote.id);
       />
     </div>
     <div class="date">
-      <span>Created: {{ dateFormat(props.activeNote.createdAt) }}</span>
-      <span>Updated: {{ dateFormat(props.activeNote.updatedAt) }}</span>
+      <span>Created: {{ createdDate }}</span>
+      <span>Updated: {{ updatedDate }}</span>
     </div>
     <div class="text-area-container">
       <textarea
@@ -129,6 +129,9 @@ const options = () => emit('display:options', props.activeNote.id);
   .toolbar {
     box-sizing: border-box;
     display: flex;
+    height: 3rem;
+    align-items: center;
+    padding: 0 .5rem;
     justify-content: space-between;
     box-shadow: 0 -1px 0 var(--n-300);
   }
@@ -169,6 +172,7 @@ const options = () => emit('display:options', props.activeNote.id);
   }
   .date {
     font-size: 0.625rem;
+    font-weight: 600;
     text-transform: uppercase;
     color: var(--n-500);
     padding: 0 1rem;

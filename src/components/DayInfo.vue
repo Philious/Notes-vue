@@ -6,14 +6,13 @@ import midday from '@/assets/images/midday.png';
 import afternoon from '@/assets/images/afternoon.png';
 import evening from '@/assets/images/evening.png';
 import IconButton from './IconButton.vue';
-import { IconEnum, ButtonEnum, PageEnum } from '@/types/enums';
-import { userAPI } from '@/api/userAPI';
+import { IconEnum, ButtonEnum } from '@/types/enums';
 import { useUserStore } from '@/store/userStore';
 
-const timeOfDay = ref<{ greeting: string, img: any }>({greeting: '', img: ''});
+const timeOfDay = ref<{ greeting: string, img: string }>({greeting: '', img: ''});
 const img = ref('');
 const date = ref();
-let timeout: NodeJS.Timeout;
+let timeout: ReturnType<typeof setTimeout>;
 
 const getState = () => {
   date.value = new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}) ;
@@ -34,7 +33,7 @@ const getState = () => {
   img.value = `url(${timeOfDay.value.img})`;
 }
 
-const setState = (t: number): NodeJS.Timeout => {
+const setState = (t: number): ReturnType<typeof setTimeout> => {
   const timeout = setTimeout(() => getState(), t);
   return timeout;
 }
