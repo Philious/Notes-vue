@@ -1,9 +1,9 @@
 # Notes
 
 ## Front-end
-Vue
-Typescript
-Pinja
+• Vue  
+• Typescript  
+• Pinja  
 
 ## Back-end
-Express
+• Express  
