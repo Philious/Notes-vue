@@ -24,9 +24,7 @@ const email = ref<string>('conny@carneval.com');
 const password = ref<string>('1234†');
 
 const action = () => {
-  
   const isValid = multiValidate([emailRef.value, passRef.value])
-  
   if (!isValid) return;
   if (pageState.value === State.Login) login(email.value, password.value)
   else if (pageState.value === State.NewUser) register(email.value, password.value)

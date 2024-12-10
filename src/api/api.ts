@@ -21,9 +21,9 @@ const createAPI = () => {
   }
 
   const login = async (email: string, password: string): Promise<string> => {
-    const response = await httpClient.get<{ message: string, token: string }>(`users/login/${email}/${password}`);
+    const response = await httpClient.get<string>(`users/login/${email}/${password}`);
     // console.log('login response ', response);
-    return response.body?.token ?? '';
+    return response.body ?? '';
   }
 
   const logout = async (token: string | null) => {

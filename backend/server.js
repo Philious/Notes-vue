@@ -1,5 +1,4 @@
 /* eslint-disable no-undef, @typescript-eslint/no-require-imports */
-
 const express = require("express");
 const uuid = require("uuid");
 const cors = require("cors");
@@ -22,25 +21,14 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// HTTPResponse (ok: boolean, statusCode: number, body?: any)
-const errorResponse = (res, statusCode, message) =>
-  res.status(statusCode).send(message);
-
-const succseResponse = (res, body) => res.status(200).json(body);
-
 // Create user { user, password }
 app.post("/users", (req, res) => {
-  const loginDetails = req.body;
+  const { email, password } = req.body;
 
-  if (
-    users.find(
-      (u) =>
-        !loginDetails.email ||
-        !loginDetails.password ||
-        u.email === loginDetails.email
-    )
-  ) {
-    return errorResponse(res, 400);
+  if (!email || !password) {
+    return res.status(400).send("Details missing");
+  } else if (u.email === email) {
+    return res.status(409).send("Email already exsists");
   }
 
   const newUser = {
@@ -51,16 +39,13 @@ app.post("/users", (req, res) => {
   };
 
   users.push(newUser);
-  succseResponse(res, newUser);
+  res.status(200).json(newUser);
 });
 
 // Login
 app.get("/users/login/:email/:password", (req, res) => {
-  const email = req.params.email;
-  const password = req.params.password;
-
   const userIndex = users.findIndex(
-    (u) => u.email === email && u.password === password
+    (u) => u.email === req.params.email && u.password === req.params.password
   );
 
   if (userIndex >= 0) {
@@ -72,56 +57,53 @@ app.get("/users/login/:email/:password", (req, res) => {
       expires: new Date(Date.now() + 900000),
       maxAge: 1800000,
     });
-
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json(token);
   } else {
-    res.status(404).json({ error: "Invalid credentials" });
+    res.status(401).json({ error: "Invalid credentials" });
   }
 });
 
 // Logout
 app.delete("/users/logout/:token", (req, res) => {
-  const token = req.params.token;
-  const userIndex = users.findIndex((u) => u.token === token);
+  const userIndex = users.findIndex((u) => u.token === req.params.token);
 
-  if (!token || userIndex < 0) return errorResponse(res, 500);
+  if (userIndex < 0) return errorResponse(res, 500);
 
   users[userIndex].token = null;
 
-  succseResponse(res, true);
+  res.status(200).json(true);
   res.clearCookie("notecookie");
 });
 
 /// Checktoken
 app.get("/users/check/:token", (req, res) => {
-  const token = req.params.token;
-  const user = users.find((u) => u.token === token);
+  const user = users.find((u) => u.token === req.params.token);
 
   res.status(200).json(!!user);
 });
 
 // Get all notes
 app.get("/notes/:token", (req, res) => {
-  const token = String(req.params.token);
-  const userIndex = users.findIndex((u) => u.token === token);
+  const userIndex = users.findIndex((u) => u.token === req.params.token);
 
-  if (userIndex < 0) return errorResponse(res, 404, "No user with that token");
+  if (userIndex < 0)
+    return res.status(404).json({ error: "No user with that token" });
 
-  const userId = users[userIndex].uuid;
+  const userId = users[userIndex]?.uuid;
+  const userNotes = notes[userId];
 
-  succseResponse(res, notes[userId]);
+  res.status(200).json(userNotes);
 });
 
-// Create a new note # { title: string, content: string, catalog: string, tags: string[] }
+// Create a new note
 app.post("/notes/:token", (req, res) => {
-  const token = String(req.params.token);
-  const userIndex = users.findIndex((u) => u.token === token);
+  const note = req.body;
+  const userIndex = users.findIndex((u) => u.token === req.params.token);
 
-  if (userIndex < 0) return errorResponse(res, 404, "No user with that token");
+  if (userIndex < 0)
+    return res.status(404).json({ error: "No user with that token" });
 
   const userId = users[userIndex].uuid;
-  const note = req.body;
-
   const date = new Date();
 
   const newNote = {
@@ -132,22 +114,27 @@ app.post("/notes/:token", (req, res) => {
   };
 
   notes[userId].push(newNote);
-  succseResponse(res, notes[userId]);
+  const userNotes = notes[userId];
+
+  res.status(200).json(userNotes);
 });
 
 // Modify an existing note # id: string, Partial<{ title: string, content: string, catalog: string, tags: string[] }>
 app.put("/notes/:token/", (req, res) => {
-  const token = Number(req.params.token);
-  const userIndex = users.findIndex((u) => u.token === token);
+  const note = req.body;
+  const userIndex = users.findIndex((u) => u.token === req.params.token);
 
-  if (userIndex < 0) return errorResponse(res, 404, "No user with that token");
+  if (userIndex < 0)
+    return res.status(404).json({ error: "No user with that token" });
 
   const userId = users[userIndex].uuid;
   const noteIndex = notes[userId].findIndex((i) => i.id === note.id);
 
-  if (noteIndex < 0) return errorResponse(res, 404, "Note doesn't exist");
+  if (noteIndex < 0)
+    return res.status(404).json({ error: "Note doesn't exist" });
 
-  const prevNote = notes[userId][noteindex];
+  const prevNote = notes[userId][noteIndex];
+
   const currentNote = {
     ...prevNote,
     ...note,
@@ -155,29 +142,27 @@ app.put("/notes/:token/", (req, res) => {
   };
 
   notes[userId][noteIndex] = currentNote;
+  const userNotes = notes[userId];
 
-  succseResponse(res, notes[userId]);
+  res.status(200).json(userNotes);
 });
 
 // Delete an existing note # id string
 app.delete("/notes/:token/:noteId", (req, res) => {
-  const token = Number(req.params.token);
-  const noteId = String(req.params.id);
+  const userIndex = users.findIndex((u) => u.token === req.params.token);
 
-  const userIndex = users.findIndex((u) => u.token === token);
-
-  if (userIndex < 0) return errorResponse(res, 404, "No user with that token");
+  if (userIndex < 0)
+    return res.status(404).json({ error: "No user with that token" });
 
   const userId = users[userIndex].uuid;
-  const noteIndex = users[userId].findIndex((n) => n.id === noteId);
-
-  if (noteIndex < 0) return errorResponse(res, 404, "Note doesn't exist");
+  const noteIndex = users[userId].findIndex((n) => n.id === req.params.id);
 
   if (noteIndex >= 0) {
     notes[userId].splice(index, 1);
-    succseResponse(res, notes[userId]);
+    const userNotes = notes[userId];
+    res.status(200).json(userNotes);
   } else {
-    errorResponse(res, 404, "Note doesn't exist");
+    res.status(404).json({ error: "Note doesn't exist" });
   }
 });
 

@@ -25,10 +25,13 @@ export const useUserStore = defineStore('user', () => {
   const login = async (email: string, password: string) => {
     loading.value = true;
     const response = await api.login(email, password);
-    loading.value = false;
-    if (response) {
-      token.value = response;
-    }
+    // Simulate server delay
+    setTimeout(() => {
+      if (response) {
+        token.value = response;
+      }
+      loading.value = false;
+    }, 1000);
   };
 
   const updatePassword = (email: string) => alert(`Not really sending anything to ${email}`)

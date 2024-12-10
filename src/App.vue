@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import aDialog from '@/components/DialogWrapper.vue';
 import ContextMenu from '@/components/ContextMenu.vue';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/LoadingOverlay.vue';
 import { useUserStore } from './store/userStore';
 import { watch } from 'vue';
 import { goto, router } from './router/router';
@@ -32,7 +32,9 @@ watch(() => userStore.token, (current) => {
   </div>
   <a-dialog />
   <ContextMenu />
-  <Loading v-if="userStore.loading" />
+  <Transition name="fade">
+    <Loading v-if="userStore.loading" />
+  </Transition>
 </template>
 
 <style scoped>
@@ -42,5 +44,12 @@ watch(() => userStore.token, (current) => {
     display: grid;
     grid-template-rows: auto var(--toolbar-height);
   }
-  
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
 </style>

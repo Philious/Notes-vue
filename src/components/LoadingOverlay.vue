@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 const dots = [
   '... ',
   ' ...',
   '. ..',
   '.. .',
 ];
-const message = ref('Loading')
+const message = ref('Loading');
+let time: ReturnType<typeof setTimeout> | null = null
 const loadingMessage = (index = 0) => {
-  setTimeout(() => {
+  time = setTimeout(() => {
     message.value = 'Loading' + dots[index];
     loadingMessage(index >= dots.length - 1 ? 0 : ++index);
-  }, 100);
+  }, 150);
 }
 onMounted(() => loadingMessage())
+onBeforeUnmount(() => { if (time) clearTimeout(time) })
 </script>
 
 <template>
@@ -28,8 +30,12 @@ onMounted(() => loadingMessage())
   place-items: center;
   position: fixed;
   inset: 0;
-  background: var(--n-200);
+  background: hsla(0, 0%, 0%, .5);
+  backdrop-filter: blur(5px);
   letter-spacing: .125rem;
 }
-.message { width: 4.625rem; white-space: nowrap;}
+.message { 
+  width: 4.625rem;
+  white-space: nowrap;
+}
 </style>
