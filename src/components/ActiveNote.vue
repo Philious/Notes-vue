@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { NoteProps } from '@/types/types';
+import { Note } from '@/types/types';
 import { IconEnum, ButtonEnum } from '@/types/enums';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import IconButton from './IconButton.vue';
 import { dateFormat } from '@/utils/sharedUtils';
 import { useNoteStore } from '@/store/noteStore';
 import { dialogService } from '@/services/dialogService';
 
-const noteStore = useNoteStore();
-const { updateNote, createNote } = noteStore;
+
+const props = defineProps<{
+  activeNote: Note;
+}>();
+
+const { updateNote, createNote } = useNoteStore();
+
 
 const emit = defineEmits<{
   (e: 'close'): void,
   (e: 'display:options', id: string): void;
 }>();
 
-const title = ref('');
-const content = ref('');
-const createdDate = computed(() => noteStore.activeNote ? dateFormat(noteStore.activeNote.createdAt) : '');
-const updatedDate = computed(() => noteStore.activeNote ? dateFormat(noteStore.activeNote.updatedAt) : '');
+const title = ref(props.activeNote.title);
+const content = ref(props.activeNote.content);
+const createdDate = computed(() => props.activeNote ? dateFormat(props.activeNote.createdAt) : '');
+const updatedDate = computed(() => props.activeNote ? dateFormat(props.activeNote.updatedAt) : '');
 
-watch(() => noteStore.activeNote, (curr) => {
-  if (curr) {
-    title.value = curr.title;  
-    content.value = curr.content;
-  }
-});
+
 
 const titleUpdate = (event: Event) => title.value = (event.target as HTMLInputElement).value;
 const contentUpdate = (event: Event) => content.value = (event.target as HTMLTextAreaElement).value;
@@ -36,7 +36,7 @@ const close = () => {
 }
 
 const closeAndAsk = () => {
-  const hasChanged = noteStore.activeNote?.title !== title.value || noteStore.activeNote?.content !== content.value;
+  const hasChanged = props.activeNote?.title !== title.value || props.activeNote?.content !== content.value;
 
   if (!hasChanged) {
     close();
@@ -51,7 +51,7 @@ const closeAndAsk = () => {
 }
 
 const closeAndSave = async() => {
-  const note = {...noteStore.activeNote, title: title.value, content: content.value } as NoteProps;
+  const note = {...props.activeNote, title: title.value, content: content.value };
 
   if(note.id) {
     await updateNote({ ...note, id: note.id });
@@ -61,7 +61,7 @@ const closeAndSave = async() => {
   close();
 }
 
-const options = () => emit('display:options', noteStore.activeNote?.id ?? '');
+const options = () => emit('display:options', props.activeNote?.id ?? '');
 
 </script>
 

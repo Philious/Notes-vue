@@ -46,6 +46,7 @@ const noteMenu = (id: string) => menuService.set([
     
     <Note
       v-if="noteStore.activeNote"
+      :activeNote="noteStore.activeNote"
       @close="() => noteStore.activeNote = null"
       @display:options="(id: string) => noteMenu(id)"
     />
