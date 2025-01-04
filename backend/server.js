@@ -150,19 +150,20 @@ app.put("/notes/:token/", (req, res) => {
 // Delete an existing note # id string
 app.delete("/notes/:token/:noteId", (req, res) => {
   const userIndex = users.findIndex((u) => u.token === req.params.token);
-
+  console.log("userIndex", userIndex);
   if (userIndex < 0)
     return res.status(404).json({ error: "No user with that token" });
 
   const userId = users[userIndex].uuid;
-  const noteIndex = users[userId].findIndex((n) => n.id === req.params.id);
 
-  if (noteIndex >= 0) {
-    notes[userId].splice(index, 1);
+  const noteIndex = notes[userId].findIndex((n) => n.id === req.params.noteId);
+  console.log("noteIndex", noteIndex);
+  if (noteIndex < 0) {
+    res.status(404).json({ error: "Note doesn't exist" });
+  } else {
+    notes[userId].splice(noteIndex, 1);
     const userNotes = notes[userId];
     res.status(200).json(userNotes);
-  } else {
-    res.status(404).json({ error: "Note doesn't exist" });
   }
 });
 
