@@ -21,7 +21,6 @@ export type Note = {
 export type LoginProps = {
   email: string;
   password: string;
-  username?: string;
 }
 
 export type User = {
@@ -69,6 +68,7 @@ export type MenuOption = {
   label: string,
   action: () => void;
   icon?: IconEnum;
+  stayOpen?: boolean;
 }
 
 export type DialogActionProps = {

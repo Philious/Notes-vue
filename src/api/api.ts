@@ -13,6 +13,7 @@ type User = {
 
 const createAPI = () => {
   const httpClient = new HttpClient(import.meta.env.VITE_APP_BASE_URL);
+
   const createUser = async (email: string, password: string) => {
     console.log('create user');
     const response = await httpClient.post<LoginDetails, User>('users', { email, password });
@@ -57,7 +58,7 @@ const createAPI = () => {
   const updateNote = async (token: string, note: Partial<NoteProps> & { id: string }) => {
     console.log('Update note');
 
-    return await httpClient.post<Partial<NoteProps>, Note[]>(`notes/${token}`, note)
+    return await httpClient.put<Partial<NoteProps>, Note[]>(`notes/${token}`, note)
   }
 
   const deleteNote = async (token: string, noteId: string) => {

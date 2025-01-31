@@ -4,30 +4,40 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "fe-dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "backend": "cd backend && npm run start && cd ..",
-    "check": "vue-tsc --noEmit -p tsconfig.json --composite false"
+    "be-dev": "cd backend && npm run start && cd ..",
+    "check": "vue-tsc --noEmit -p tsconfig.json --composite false",
+    "start": "concurrently --names 'Backend,Frontend' \"npm run be-dev\" \"npm run fe-dev\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "pinia": "^2.2.1",
-    "uuid": "^11.0.3",
+    "pinia": "^2.3.1",
+    "uuid": "^11.0.5",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@babel/types": "^7.26.0",
-    "@eslint/js": "^9.16.0",
-    "@types/node": "^20.17.9",
+    "@babel/types": "^7.26.7",
+    "@eslint/js": "^9.19.0",
+    "@types/node": "^20.17.16",
+    "@typescript-eslint/parser": "^8.22.0",
     "@vitejs/plugin-vue": "^5.2.1",
-    "eslint": "^9.16.0",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.3.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.19.0",
     "eslint-plugin-vue": "^9.32.0",
-    "globals": "^15.13.0",
-    "sass-embedded": "^1.82.0",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.17.0",
-    "vite": "^5.4.11",
-    "vue-tsc": "^2.1.10"
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "prettier-eslint": "^16.3.0",
+    "sass-embedded": "^1.83.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0",
+    "vite": "^5.4.14",
+    "vue-eslint-parser": "^9.4.3",
+    "vue-tsc": "^2.2.0"
   }
 }

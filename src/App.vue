@@ -1,29 +1,33 @@
 <script setup lang="ts">
-import aDialog from '@/components/DialogWrapper.vue';
-import ContextMenu from '@/components/ContextMenu.vue';
-import Loading from '@/components/LoadingOverlay.vue';
-import { useUserStore } from './store/userStore';
-import { watch } from 'vue';
-import { goto, router } from './router/router';
-import { PageEnum } from './types/enums';
-import { useNoteStore } from './store/noteStore';
+import aDialog from "@/components/DialogWrapper.vue";
+import ContextMenu from "@/components/ContextMenu.vue";
+import Loading from "@/components/LoadingOverlay.vue";
+import { useUserStore } from "./store/userStore";
+import { watch } from "vue";
+import { goto, router } from "./router/router";
+import { PageEnum } from "./types/enums";
+import { useNoteStore } from "./store/noteStore";
 
 const userStore = useUserStore();
 const noteStore = useNoteStore();
 userStore.checkAuthentication();
 
-watch(() => userStore.token, (current) => {
+watch(
+  () => userStore.token,
+  (current) => {
     if (current) {
       userStore.loading = true;
       goto(PageEnum.MAIN);
       noteStore.getAllNotes(current);
       userStore.loading = false;
     } else {
-      if (router.currentRoute.value.name !== PageEnum.LOGIN) goto(PageEnum.LOGIN);
+      if (router.currentRoute.value.name !== PageEnum.LOGIN)
+        goto(PageEnum.LOGIN);
       userStore.loading = false;
-    };
-  }, { immediate: true })
-
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -32,24 +36,14 @@ watch(() => userStore.token, (current) => {
   </div>
   <a-dialog />
   <ContextMenu />
-  <Transition name="fade">
-    <Loading v-if="userStore.loading" />
-  </Transition>
+  <Loading :loading="userStore.loading" />
 </template>
 
 <style scoped>
-  .main-container {
-    width: 100vw;
-    height: 100vh;
-    display: grid;
-    grid-template-rows: auto var(--toolbar-height);
-  }
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity .5s;
-  }
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
+.main-container {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto var(--toolbar-height);
+}
 </style>

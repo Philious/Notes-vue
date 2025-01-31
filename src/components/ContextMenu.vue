@@ -1,86 +1,88 @@
 <script setup lang="ts">
-import { menuService } from '@/services/contextMenuService';
+import { menuService } from "@/services/contextMenuService";
+import { MenuOption } from "@/types/types";
+import TeleportTransition from "./TeleportTransition.vue";
 
+const closeOnclick = (option: MenuOption) => {
+  option.action();
+  if (!option.stayOpen) menuService.close();
+};
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition
-      name="context-menu"
-      appear
-    >
-      <div
-        v-if="menuService.menuOptions?.length"
-        class="context-container"
-      >
+  <TeleportTransition>
+    <div v-if="menuService.menuOptions?.length" class="context-container">
+      <button class="mask" @click="menuService.close"></button>
+      <div class="context-menu">
         <button
-          class="mask"
-          @click="menuService.close"
-        ></button>
-        <div class="context-menu">
-          <button
-            v-for="option in menuService.menuOptions"
-            :key="option.label"
-            class="option"
-            @click="option.action"
-          >
-            {{ option.label }}
-          </button>
-        </div>
+          v-for="option in menuService.menuOptions"
+          :key="option.label"
+          class="option"
+          @click="() => closeOnclick(option)"
+        >
+          {{ option.label }}
+        </button>
       </div>
-    </Transition>
-  </Teleport>
+    </div>
+  </TeleportTransition>
 </template>
 
 <style scoped lang="scss">
-  
-  .context-container,
-  .mask {
-    position: fixed;
-    inset: 0;
+.context-container,
+.mask {
+  position: fixed;
+  inset: -3rem 0 0;
+}
+.context-container {
+  z-index: 1;
+}
+.mask {
+  background-color: hsla(0, 0%, 0%, 0.24);
+  border: none;
+}
+.context-menu {
+  position: fixed;
+  inset: 0;
+  top: unset;
+  bottom: 2rem;
+  max-width: min(90vw, 20rem);
+  border-radius: 0.5rem;
+  background-color: var(--n-200);
+  margin: auto;
+}
+
+.option {
+  height: 3rem;
+  border: none;
+  background-color: transparent;
+  font-size: 0.875rem;
+  width: 100%;
+  color: var(--n-700);
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--n-300);
   }
-  .context-container { z-index: 1; }
-  .mask {
-    background-color: hsla(0, 0%, 0% , 0.24);
-    border:none;
-  }
+}
+
+.section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3rem;
+}
+
+.context-menu-enter-active,
+.context-menu-leave-active {
+  transition: opacity 0.25s linear;
   .context-menu {
-    position: fixed;
-    inset: 0;
-    top: unset;
-    bottom: 2rem;
-    max-width: min(90vw, 20rem);
-    border-radius: .5rem;
-    background-color: var(--n-200);
-    margin: auto;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
+}
 
-  .option {
-    height: 3rem;
-    border: none;
-    background-color: transparent;
-    font-size: 0.875rem;
-    width: 100%;
-    color: var(--n-700);
-    &:not(:last-child) { border-bottom: 1px solid var(--n-300); }
+.context-menu-enter-from,
+.context-menu-leave-to {
+  opacity: 0;
+  .context-menu {
+    transform: translateY(100%);
   }
-
-  .section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 3rem;
-  }
-
-  .context-menu-enter-active,
-  .context-menu-leave-active {
-    transition: opacity .25s linear;
-    .context-menu { transition: transform .5s cubic-bezier(0.22, 1, 0.36, 1); }
-  }
-
-  .context-menu-enter-from,
-  .context-menu-leave-to {
-    opacity: 0;
-    .context-menu { transform: translateY(100%); }
-  }
+}
 </style>

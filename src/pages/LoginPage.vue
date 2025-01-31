@@ -15,7 +15,7 @@ enum State {
   Forgot
 }
 
-const { login, register, updatePassword} = useUserStore();
+const { login, register, updatePassword } = useUserStore();
 
 const emailRef = ref<InputElement | null>(null);
 const passRef = ref<InputElement | null>(null);

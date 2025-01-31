@@ -5,7 +5,7 @@
 <template>
   <svg
     viewBox="0 0 24 24"
-    class="remove-note icn"
+    class="letter-size icn"
     stroke-linecap="round"
   >
     <path d="M5.24987 12H4L6.27564 5H7.7212L10 12H8.75013L7.02367 6.43555H6.97317L5.24987 12ZM5.2909 9.25537H8.69963V10.2739H5.2909V9.25537Z" />
