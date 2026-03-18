@@ -38,8 +38,6 @@ const noteMenu = (id: string) =>
       action: () => deleteNote(id),
     },
   ]);
-
-console.log(noteStore.activeNote);
 </script>
 
 <template>

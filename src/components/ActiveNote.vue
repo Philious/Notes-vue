@@ -24,16 +24,16 @@ watch(
   (c) => {
     title.value = c?.title ?? "";
     content.value = c?.content ?? "";
-  }
+  },
 );
 
 const title = ref("");
 const content = ref("");
 const createdDate = computed(() =>
-  props.activeNote ? dateFormat(props.activeNote.createdAt) : ""
+  props.activeNote ? dateFormat(props.activeNote.createdAt) : "",
 );
 const updatedDate = computed(() =>
-  props.activeNote ? dateFormat(props.activeNote.updatedAt) : ""
+  props.activeNote ? dateFormat(props.activeNote.updatedAt) : "",
 );
 
 const titleUpdate = (event: Event) =>
@@ -42,7 +42,6 @@ const contentUpdate = (event: Event) =>
   (content.value = (event.target as HTMLTextAreaElement).value);
 
 const close = () => {
-  console.log("close");
   dialogService.close();
   emit("close");
 };
