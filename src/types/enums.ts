@@ -1,43 +1,50 @@
-export enum PageEnum {
-  LOGIN = 'login',
-  MAIN = 'main',
-  NEW = 'new_user',
-  FORGOT = 'forgot_password'
-}
+export const Pages = {
+  LOGIN : 'login',
+  MAIN : 'main',
+  NEW : 'new_user',
+  FORGOT : 'forgot_password'
+} as const
 
-export enum InputState {
-  Default = 'default',
-  Disabled = 'disabled',
-  Ok = 'ok',
-  Error = 'error'
-}
+export const InputState = {
+  Default: 'default',
+  Disabled: 'disabled',
+  Ok: 'ok',
+  Error: 'error'
+} as const
+export type InputStateType = typeof InputState[keyof typeof InputState]
 
-export enum NetworkStatus {
-  IDLE = 'idle',
-  LOADING = 'loading',
-  SUCCSESS = 'succeeded',
-  FAILED = 'failed'
-}
+export const NetworkStatus = {
+  IDLE : 'idle',
+  LOADING : 'loading',
+  SUCCSESS : 'succeeded',
+  FAILED : 'failed'
+} as const
 
-export enum ButtonEnum {
-  Default = 'default',
-  Filled = 'filled',
-  Border = 'border',
-  Text = 'text'
-}
+export const Buttons = {
+  Default : 'default',
+  Filled : 'filled',
+  Border : 'border',
+  Text : 'text'
+} as const
 
-export enum IconEnum {
-  Add = 'add',
-  Cancel = 'cancel',
-  Up = 'up',
-  Left = 'left',
-  Down = 'down',
-  Right = 'right',
-  List = 'list',
-  Options = 'options',
-  Setting = 'setting',
-  Check = 'check',
-  Remove = 'remove',
-  LetterSize = 'letter-size',
-  LogOut = 'logout'
-}
+export type ButtonRecord = { [K in keyof typeof Buttons]: (typeof Buttons)[K] } 
+export type ButtonType = ButtonRecord[keyof ButtonRecord]
+
+export const Icons = {
+  Add : 'add',
+  Cancel : 'cancel',
+  Up : 'up',
+  Left : 'left',
+  Down : 'down',
+  Right : 'right',
+  List : 'list',
+  Options : 'options',
+  Setting : 'setting',
+  Check : 'check',
+  Remove : 'remove',
+  LetterSize : 'letter-size',
+  LogOut : 'logout'
+} as const
+
+export type IconRecord = { [K in keyof typeof Icons]: (typeof Icons)[K] } 
+export type IconType = IconRecord[keyof IconRecord]

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { menuService } from "@/services/contextMenuService";
 import { MenuOption } from "@/types/types";
-import TeleportTransition from "./TeleportTransition.vue";
 
 const closeOnclick = (option: MenuOption) => {
   option.action();
@@ -10,21 +9,36 @@ const closeOnclick = (option: MenuOption) => {
 </script>
 
 <template>
-  <TeleportTransition>
-    <div v-if="menuService.menuOptions?.length" class="context-container">
-      <button class="mask" @click="menuService.close"></button>
-      <div class="context-menu">
+  <Teleport to="body">
+    <Transition
+      appear
+      name="context-menu"
+    >
+      <div
+        v-if="menuService.menuOptions.value.length"
+        
+        class="context-container"
+      >
         <button
-          v-for="option in menuService.menuOptions"
-          :key="option.label"
-          class="option"
-          @click="() => closeOnclick(option)"
+          class="mask"
+          @click="menuService.close"
+        />
+        <div
+          class="context-menu"
+          :style="menuService.position.value"
         >
-          {{ option.label }}
-        </button>
+          <button
+            v-for="option in menuService.menuOptions.value"
+            :key="option.label"
+            class="option"
+            @click="() => closeOnclick(option)"
+          >
+            {{ option.label }}
+          </button>
+        </div>
       </div>
-    </div>
-  </TeleportTransition>
+    </Transition>
+  </Teleport>
 </template>
 
 <style scoped lang="scss">
@@ -34,7 +48,7 @@ const closeOnclick = (option: MenuOption) => {
   inset: -3rem 0 0;
 }
 .context-container {
-  z-index: 1;
+  z-index: 2;
 }
 .mask {
   background-color: hsla(0, 0%, 0%, 0.24);
@@ -42,13 +56,15 @@ const closeOnclick = (option: MenuOption) => {
 }
 .context-menu {
   position: fixed;
-  inset: 0;
-  top: unset;
-  bottom: 2rem;
   max-width: min(90vw, 20rem);
   border-radius: 0.5rem;
   background-color: var(--n-200);
   margin: auto;
+  @include mobile {
+    inset: 0;
+    top: unset !important;
+    bottom: 2rem !important;
+  }
 }
 
 .option {
@@ -74,7 +90,7 @@ const closeOnclick = (option: MenuOption) => {
 .context-menu-leave-active {
   transition: opacity 0.25s linear;
   .context-menu {
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
@@ -82,7 +98,7 @@ const closeOnclick = (option: MenuOption) => {
 .context-menu-leave-to {
   opacity: 0;
   .context-menu {
-    transform: translateY(100%);
+    transform: translateY(3rem);
   }
 }
 </style>

@@ -8,14 +8,34 @@ const emit = defineEmits<{
 
 <template>
   <div class="menu">
-    <button class="menu-btn" @click="emit('toggle:menu')">
-      <svg width="16" height="16" viewBox="0 0 16 16" class="icn">
+    <button
+      class="menu-btn"
+      @click="emit('toggle:menu')"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        class="icn"
+      >
         <path d="M0 2H16ZM0 8H16ZM0 14H16" />
       </svg>
     </button>
-    <button class="search-btn" @click="emit('toggle:search')">
-      <svg width="16" height="16" viewBox="-.5 -.5 15.5 15.5" class="icn">
-        <circle cx="6" cy="6" r="6" />
+    <button
+      class="search-btn"
+      @click="emit('toggle:search')"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="-.5 -.5 15.5 15.5"
+        class="icn"
+      >
+        <circle
+          cx="6"
+          cy="6"
+          r="6"
+        />
         <path d="M10 10, 16 16" />
       </svg>
     </button>

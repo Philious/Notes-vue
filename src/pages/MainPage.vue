@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import NoteList from "@/components/NoteList.vue";
 import DayInfo from "@/components/DayInfo.vue";
-import ScratchPad from "@/components/ScratchPad.vue";
 import Note from "@/components/ActiveNote.vue";
 import { dialogService } from "@/services/dialogService";
-import { menuService } from "@/services/contextMenuService";
-import { IconEnum } from "@/types/enums";
-import { setLetterSize } from "@/utils/helpers";
 import { useNoteStore } from "@/store/noteStore";
 
 const noteStore = useNoteStore();
@@ -25,30 +21,17 @@ const deleteNote = (id: string) => {
   ]);
 };
 
-const noteMenu = (id: string) =>
-  menuService.set([
-    {
-      label: "Letter size",
-      icon: IconEnum.LetterSize,
-      action: setLetterSize,
-    },
-    {
-      label: "Remove",
-      icon: IconEnum.Remove,
-      action: () => deleteNote(id),
-    },
-  ]);
 </script>
 
 <template>
   <div class="main-page-container">
     <DayInfo />
     <NoteList />
-    <ScratchPad />
+    <!--<ScratchPad />-->
     <Note
-      :activeNote="noteStore.activeNote"
+      :active-note="noteStore.activeNote"
       @close="() => (noteStore.activeNote = null)"
-      @display:options="(id: string) => noteMenu(id)"
+      @delete="(id: string) => deleteNote(id)"
     />
   </div>
 </template>
@@ -58,7 +41,7 @@ const noteMenu = (id: string) =>
   display: flex;
   flex-direction: column;
   box-shadow: 0.0625rem 0 0 var(--n-300);
-  @include tabletUp {
+  @include desktop {
     display: grid;
     grid-template-columns: var(--main-columns);
     grid-template-rows: var(--day-area-height) calc(

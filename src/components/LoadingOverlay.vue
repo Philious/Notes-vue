@@ -8,7 +8,10 @@ const message = "Loading";
 
 <template>
   <Transition name="fade">
-    <div v-if="loading" id="loading-screen">
+    <div
+      v-if="loading"
+      id="loading-screen"
+    >
       <span class="message">{{ message }}</span>
       <span>.</span>
       <span>.</span>

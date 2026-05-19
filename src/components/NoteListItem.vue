@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { Note } from "@/types/types";
 import { dateFormat } from "@/utils/sharedUtils";
-
+import type { Note } from "@/types/types";
 const props = defineProps<Note>();
 const emits = defineEmits<{ (e: "setActiveNote", id: string): void }>();
 </script>
 
 <template>
   <li class="list-item-container">
-    <button class="list-item" @click="() => emits('setActiveNote', props.id)">
+    <button
+      class="list-item"
+      @click="() => emits('setActiveNote', props.id)"
+    >
       <div class="list-item-header">
         {{ props.title }}
       </div>
@@ -25,16 +27,20 @@ const emits = defineEmits<{ (e: "setActiveNote", id: string): void }>();
 <style scoped lang="scss">
 .list-item-container {
   scroll-snap-align: start;
+
   &:not(:last-child) {
     box-shadow: 0 1px 0 var(--n-300);
   }
+
   &:active {
+
     &,
     .list-item-content:after {
       background-color: var(--n-100);
     }
   }
 }
+
 .list-item {
   cursor: pointer;
   background-color: transparent;
@@ -49,10 +55,12 @@ const emits = defineEmits<{ (e: "setActiveNote", id: string): void }>();
   height: min-content;
   position: relative;
 }
+
 .list-item-header {
   font-size: var(--list-item-font-size);
   font-weight: 700;
 }
+
 .list-item-content {
   color: hsl(0, 0%, 64%);
   font-size: var(--list-item-font-size);
@@ -62,6 +70,7 @@ const emits = defineEmits<{ (e: "setActiveNote", id: string): void }>();
   overflow: hidden;
   white-space-collapse: break-spaces;
   position: relative;
+
   &:after {
     content: "...";
     display: block;
@@ -75,6 +84,7 @@ const emits = defineEmits<{ (e: "setActiveNote", id: string): void }>();
     right: 0;
   }
 }
+
 .list-item-date {
   margin-top: 0.5rem;
   font-size: 0.625rem;

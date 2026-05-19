@@ -18,8 +18,13 @@ const props = defineProps<{
     <div class="input-wrapper">
       <slot name="input" />
     </div>
-    <Transition name="help" >
-      <div v-if="props.helpText" class="help-text">{{ props.helpText }}</div>
+    <Transition name="help">
+      <div
+        v-if="props.helpText"
+        class="help-text"
+      >
+        {{ props.helpText }}
+      </div>
     </Transition>
   </div>
 </template>

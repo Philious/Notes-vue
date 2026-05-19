@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import IconButton from "@/components/IconButton.vue";
-import { IconEnum, ButtonEnum } from "@/types/enums";
+import { Icons, Buttons } from "@/types/enums";
 import { debounce, newNote } from "@/utils/sharedUtils";
-import { ref } from "vue";
+import { ref, useTemplateRef } from "vue";
 import { menuService } from "@/services/contextMenuService";
 import { useNoteStore } from "@/store/noteStore";
 
 const noteStore = useNoteStore();
 const active = ref(false);
-const content = ref(noteStore.scratchNote?.content ?? "");
 
+const content = ref(noteStore.scratchNote?.content ?? "");
+const optionsBtnRef = useTemplateRef('options-icon');
 const update = (ev: Event) => {
   content.value = (ev.target as HTMLTextAreaElement).value;
 };
@@ -31,29 +32,34 @@ const createNote = () => {
 
 const scratchMenu = (e: Event) => {
   e.stopPropagation();
+  const el = optionsBtnRef.value?.$el ?? null;
   menuService.set([
     { label: "Make into a note", action: createNote },
     { label: "Clear scratch pad", action: clearScratchPad },
-  ]);
+  ], el);
 };
 </script>
 
 <template>
   <div :class="['scratch-pad', { active: active }]">
-    <div class="scratch-pad-header" @click="toggleScratchPad">
+    <div
+      class="scratch-pad-header"
+      @click="toggleScratchPad"
+    >
       <label class="header">Scratch pad</label>
       <div class="scratch-pad-options">
         <IconButton
           v-if="content"
+          ref="options-icon"
           class="options-icon"
-          :type="ButtonEnum.Border"
-          :icon="IconEnum.Options"
+          :type="Buttons.Border"
+          :icon="Icons.Options"
           :action="scratchMenu"
         />
         <IconButton
           class="arrow-icon"
-          :type="ButtonEnum.Border"
-          :icon="IconEnum.Up"
+          :type="Buttons.Border"
+          :icon="Icons.Up"
           :action="() => {}"
         />
       </div>
@@ -63,7 +69,7 @@ const scratchMenu = (e: Event) => {
       :value="content"
       @blur="update"
       @input="lazyUpdate"
-    ></textarea>
+    />
   </div>
 </template>
 

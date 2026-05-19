@@ -1,4 +1,4 @@
-import { IconEnum, ButtonEnum } from "./enums";
+import { IconType, ButtonType } from "./enums";
 
 export type NoteProps = {
   id?: string;
@@ -43,7 +43,7 @@ export type DBResponse<T> = {
 
 export type ContextMenuItemProps = {
   label: string,
-  icon?: IconEnum;
+  icon?: IconType;
   keepOpen?: boolean;
   action: () => void
 }
@@ -60,14 +60,14 @@ export type ToastOptions = {
 export type Tab = {
   id: string;
   label: string;
-  icon?: IconEnum;
+  icon?: IconType;
   action: () => void;
 }
 
 export type MenuOption = {
   label: string,
   action: () => void;
-  icon?: IconEnum;
+  icon?: IconType;
   stayOpen?: boolean;
 }
 
@@ -84,8 +84,8 @@ export type DialogProps = {
 }
 
 export type IconButtonProps = {
-  type: ButtonEnum;
-  icon: IconEnum;
+  type: ButtonType;
+  icon: IconType;
   action: () => void;
 }
 

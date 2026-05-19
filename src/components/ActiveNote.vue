@@ -1,23 +1,25 @@
 <script setup lang="ts">
 import { Note } from "@/types/types";
-import { IconEnum, ButtonEnum } from "@/types/enums";
-import { computed, ref, watch } from "vue";
+import { Icons, Buttons} from "@/types/enums";
+import { computed, ref, useTemplateRef, watch } from "vue";
 import IconButton from "./IconButton.vue";
 import { dateFormat } from "@/utils/sharedUtils";
 import { useNoteStore } from "@/store/noteStore";
 import { dialogService } from "@/services/dialogService";
-import TeleportTransition from "./TeleportTransition.vue";
+import { menuService } from "@/services/contextMenuService";
 
 const props = defineProps<{
   activeNote: Note | null;
 }>();
-
-const { updateNote, createNote } = useNoteStore();
-
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "display:options", id: string): void;
+  (e: "letterSize"): void
+  (e: "delete", id: string): void;
 }>();
+
+const { updateNote, createNote } = useNoteStore();
+const optionsIconElem = useTemplateRef('optionsIcon')
+
 
 watch(
   () => props.activeNote,
@@ -79,59 +81,80 @@ const closeAndSave = async () => {
   close();
 };
 
-const options = () => emit("display:options", props.activeNote?.id ?? "");
+const options = () => {
+  console.log(optionsIconElem.value?.$el)
+  if (props.activeNote && optionsIconElem.value) {
+    const id = props.activeNote.id;
+    const el = optionsIconElem.value.$el;
+    menuService.set([
+    {
+      label: "Remove",
+      icon: Icons.Remove,
+      action: () => emit('delete', id),
+    },
+  ], el);
+  }
+}
 </script>
 
 <template>
-  <TeleportTransition>
-    <div v-if="props.activeNote" id="note" class="note">
-      <div class="title-area">
-        <input
-          ref="titleRef"
-          v-model="title"
-          class="title"
-          autofocus
-          @input="titleUpdate"
-        />
-      </div>
-      <div class="date">
-        <span>Created: {{ createdDate }}</span>
-        <span>Updated: {{ updatedDate }}</span>
-      </div>
-      <div class="text-area-container">
-        <textarea
-          ref="contentRef"
-          v-model="content"
-          class="text-area"
-          @input="contentUpdate"
-        ></textarea>
-      </div>
-      <div class="toolbar">
-        <div class="toolbar-left-section">
-          <IconButton
-            :type="ButtonEnum.Border"
-            :icon="IconEnum.Left"
-            :action="closeAndAsk"
-          />
-          <IconButton
-            :type="ButtonEnum.Border"
-            :icon="IconEnum.Check"
-            :action="closeAndSave"
+  <Teleport to="body">
+    <Transition appear>
+      <div
+        v-if="props.activeNote"
+        id="note"
+        class="note"
+      >
+        <div class="title-area">
+          <input
+            ref="titleRef"
+            v-model="title"
+            class="title"
+            autofocus
+            @input="titleUpdate"
+          >
+        </div>
+        <div class="date">
+          <span>Created: {{ createdDate }}</span>
+          <span>Updated: {{ updatedDate }}</span>
+        </div>
+        <div class="text-area-container">
+          <textarea
+            ref="contentRef"
+            v-model="content"
+            class="text-area"
+            @input="contentUpdate"
           />
         </div>
-        <div class="toolbar-right-section">
-          <IconButton
-            :type="ButtonEnum.Border"
-            :icon="IconEnum.Options"
-            :action="options"
-          />
+        <div class="toolbar">
+          <div class="toolbar-left-section">
+            <IconButton
+              :type="Buttons.Border"
+              :icon="Icons.Left"
+              :action="closeAndAsk"
+            />
+            <IconButton
+              :type="Buttons.Border"
+              :icon="Icons.Check"
+              :action="closeAndSave"
+            />
+          </div>
+          <div class="toolbar-right-section">
+            <IconButton
+              ref="optionsIcon"
+              :type="Buttons.Border"
+              :icon="Icons.Options"
+              :action="options"
+            />
+          </div>
         </div>
       </div>
-    </div>
-  </TeleportTransition>
+    </Transition>
+  </Teleport>
 </template>
 
 <style scoped lang="scss">
+@include commonTranstition("v", 0.5s);
 .note {
   grid-area: var(--note-area);
   background-color: var(--black);
@@ -142,6 +165,7 @@ const options = () => emit("display:options", props.activeNote?.id ?? "");
 
   z-index: 1;
 }
+
 .toolbar {
   box-sizing: border-box;
   display: flex;
@@ -151,6 +175,7 @@ const options = () => emit("display:options", props.activeNote?.id ?? "");
   justify-content: space-between;
   box-shadow: 0 -0.0625rem 0 var(--n-300);
 }
+
 .icon-btn {
   @include base-btn;
   width: 3rem;
@@ -158,6 +183,7 @@ const options = () => emit("display:options", props.activeNote?.id ?? "");
   display: grid;
   place-content: center;
 }
+
 .back {
   overflow: visible;
   fill: transparent;
@@ -166,10 +192,12 @@ const options = () => emit("display:options", props.activeNote?.id ?? "");
   stroke: var(--primary);
   stroke-width: 2;
 }
+
 .toolbar-left-section,
 .toolbar-right-section {
   display: flex;
 }
+
 .title-area {
   box-sizing: border-box;
   padding: 0.5rem 0;
@@ -177,6 +205,7 @@ const options = () => emit("display:options", props.activeNote?.id ?? "");
   text-transform: capitalize;
   margin: 0.25rem;
 }
+
 .title {
   box-sizing: border-box;
   font-size: 1rem;
@@ -186,6 +215,7 @@ const options = () => emit("display:options", props.activeNote?.id ?? "");
   border: none;
   width: 100%;
 }
+
 .date {
   font-size: 0.625rem;
   font-weight: 600;
@@ -196,9 +226,11 @@ const options = () => emit("display:options", props.activeNote?.id ?? "");
   display: flex;
   margin: auto 0;
 }
+
 .text-area-container {
   margin: 0 0.25rem;
 }
+
 .text-area {
   box-sizing: border-box;
   border: none;

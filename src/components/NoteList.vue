@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import IconButton from '@/components/IconButton.vue';
 import NoteListItem from '@/components/NoteListItem.vue';
-import { IconEnum, ButtonEnum } from '@/types/enums';
-
+import { Icons, Buttons } from '@/types/enums';
 import { useNoteStore } from '@/store/noteStore';
-import { menuService } from '@/services/contextMenuService';
 import { newNote } from '@/utils/sharedUtils';
+import {  ref, useTemplateRef } from 'vue';
+import { MenuOption } from '@/types/types';
+import { menuService } from '@/services/contextMenuService';
 
 const noteStore = useNoteStore();
-
 const { notes, getNote } = noteStore;
+
+
+const letterSizeRef = useTemplateRef('letterSize')
+const lettersizeMenu = ref<MenuOption[] | null>(null);
 
 const setActive = (id: string) => {
   noteStore.activeNote = getNote(id);
@@ -21,16 +25,19 @@ const newActiveNote = () => {
 
 const updateAppFontSize = (size: number) => {
   document.documentElement.style.setProperty("--app-font-size", `${size}px`);
-  menuService.close();
+  lettersizeMenu.value = null;
 }
 
-const changeLetterSize = () => {
-  menuService.set([
+const changeLetterSize = (el: HTMLElement) => {
+  menuService.set(
+    [
     { label: 'Large',  action: () => updateAppFontSize(22) },
     { label: 'Normal', action: () => updateAppFontSize(16) },
     { label: 'Small', action: () => updateAppFontSize(12) }
-  ]);
-};
+  ], 
+  el
+)
+}
 
 </script>
 
@@ -40,13 +47,14 @@ const changeLetterSize = () => {
       <label class="header">Notes</label>
       <div class="list-options">
         <IconButton
-          :type="ButtonEnum.Border"
-          :icon="IconEnum.LetterSize"
-          :action="changeLetterSize"
+          ref="letterSize"
+          :type="Buttons.Border"
+          :icon="Icons.LetterSize"
+          :action="() => changeLetterSize(letterSizeRef?.$el)"
         />
         <IconButton
-          :type="ButtonEnum.Border"
-          :icon="IconEnum.Add"
+          :type="Buttons.Border"
+          :icon="Icons.Add"
           :action="newActiveNote"
         />
       </div>
@@ -57,7 +65,7 @@ const changeLetterSize = () => {
           v-for="n in notes"
           v-bind="n"
           :key="n.id"
-          @setActiveNote="setActive"
+          @set-active-note="setActive"
         />
       </ul>
     </template>
@@ -75,7 +83,7 @@ const changeLetterSize = () => {
     box-shadow: 1px 0 0 var(--n-300);
     flex: 1;
     display: contents;
-    @include tabletUp {
+    @include desktop {
       display: grid;
       grid-template-rows: var(--toolbar-height) 1fr;
     }

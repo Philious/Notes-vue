@@ -3,12 +3,21 @@ import { dialogService } from "@/services/dialogService";
 </script>
 
 <template>
-  <div v-if="dialogService.active.value" class="dialog-container">
+  <div
+    v-if="dialogService.active.value"
+    class="dialog-container"
+  >
     <div class="dialog">
-      <div v-if="dialogService.dialog.title" class="dialog-title">
+      <div
+        v-if="dialogService.dialog.title"
+        class="dialog-title"
+      >
         {{ dialogService.dialog.title }}
       </div>
-      <div v-if="dialogService.dialog.content" class="dialog-content">
+      <div
+        v-if="dialogService.dialog.content"
+        class="dialog-content"
+      >
         {{ dialogService.dialog.content }}
         {{ dialogService.active.value }}
       </div>

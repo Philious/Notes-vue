@@ -40,7 +40,7 @@
   --txt-mid: 0.875rem;
   --txt-small: .75rem;
 
-  @include mix.tabletUp {
+  @include mix.desktop {
     --toolbar-height: 3rem;
     --main-tab-bar-height: 4rem;
     --main-columns: 20rem;

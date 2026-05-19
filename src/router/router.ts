@@ -1,7 +1,6 @@
 import { createMemoryHistory, createRouter, RouteRecordRaw } from 'vue-router'
 
 import MainView from '@/pages/MainPage.vue'
-import { PageEnum } from '@/types/enums';
 import LoginPage from '@/pages/LoginPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -10,11 +9,11 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/login',
   }, {
     path: '/login',
-    name: PageEnum.LOGIN,
+    name: 'login',
     component: LoginPage
   }, {
     path: '/main/:userId?',
-    name: PageEnum.MAIN,
+    name: 'main',
     component: MainView,
     props: true
   }
@@ -25,6 +24,6 @@ export const router = createRouter({
   routes,
 });
 
-export const goto = (name: PageEnum, params?: Record<string, string>) => {
+export const goto = (name: 'login' | 'main', params?: Record<string, string>) => {
   router.push({ name, params })
 }

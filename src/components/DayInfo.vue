@@ -6,7 +6,7 @@ import midday from '@/assets/images/midday.png';
 import afternoon from '@/assets/images/afternoon.png';
 import evening from '@/assets/images/evening.png';
 import IconButton from './IconButton.vue';
-import { IconEnum, ButtonEnum } from '@/types/enums';
+import { Icons, Buttons } from '@/types/enums';
 import { useUserStore } from '@/store/userStore';
 
 const timeOfDay = ref<{ greeting: string, img: string }>({greeting: '', img: ''});
@@ -53,7 +53,7 @@ onUnmounted(() => clearTimeout(timeout));
       class="img"
       :src="timeOfDay.img"
       alt=""
-    />
+    >
     <div class="text">
       {{ timeOfDay.greeting }}
     </div>
@@ -62,8 +62,8 @@ onUnmounted(() => clearTimeout(timeout));
     </div>
     <IconButton
       class="logout"
-      :type="ButtonEnum.Default"
-      :icon="IconEnum.LogOut"
+      :type="Buttons.Default"
+      :icon="Icons.LogOut"
       :action="() => useUserStore().logout()"
     />
   </div>

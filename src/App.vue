@@ -5,8 +5,8 @@ import Loading from "@/components/LoadingOverlay.vue";
 import { useUserStore } from "./store/userStore";
 import { watch } from "vue";
 import { goto, router } from "./router/router";
-import { PageEnum } from "./types/enums";
 import { useNoteStore } from "./store/noteStore";
+
 
 const userStore = useUserStore();
 const noteStore = useNoteStore();
@@ -17,12 +17,12 @@ watch(
   (current) => {
     if (current) {
       userStore.loading = true;
-      goto(PageEnum.MAIN);
+      goto('main');
       noteStore.getAllNotes(current);
       userStore.loading = false;
     } else {
-      if (router.currentRoute.value.name !== PageEnum.LOGIN)
-        goto(PageEnum.LOGIN);
+      if (router.currentRoute.value.name !== 'login')
+        goto('login');
       userStore.loading = false;
     }
   },

@@ -1,10 +1,10 @@
 import { Ref } from "vue";
-import { InputState } from "./enums";
+import { InputStateType } from "./enums";
 import TextField from "@/components/TextField.vue";
 
 export type InputElement = InstanceType<typeof TextField> & ExposedInputValidation;
 
-export type ValidationFunction = (value: string | null, state: Ref<InputState>) => string | null;
+export type ValidationFunction = (value: string | null, state: Ref<InputStateType>) => string | null;
 
 export type InputValidate = {
   onAction?: ValidationFunction;

@@ -1,7 +1,6 @@
-/* eslint-disable no-undef, @typescript-eslint/no-require-imports */
-const express = require("express");
-const uuid = require("uuid");
-const cors = require("cors");
+import express, { cors } from 'express';
+import { v4 as uid } from 'uuid';
+
 const app = express();
 const port = 3000;
 
@@ -32,7 +31,7 @@ app.post("/users", (req, res) => {
   }
 
   const newUser = {
-    uuid: uuid.v4(),
+    uuid: uid(),
     createdAt: new Date().toISOString(),
     email: data.email,
     password: data.password,
@@ -49,7 +48,7 @@ app.get("/users/login/:email/:password", (req, res) => {
   );
 
   if (userIndex >= 0) {
-    const token = uuid.v4();
+    const token = uid();
     users[userIndex].token = token;
 
     res.cookie("note-cookie", token, {
@@ -107,7 +106,7 @@ app.post("/notes/:token", (req, res) => {
   const date = new Date();
 
   const newNote = {
-    id: uuid.v4(),
+    id: uid(),
     createdAt: date,
     updatedAt: date,
     ...note,
@@ -170,7 +169,7 @@ app.delete("/notes/:token/:noteId", (req, res) => {
 const notes = {
   "89503dc5-9517-48a2-833f-6bc7c0d32f1b": [
     {
-      id: uuid.v4(),
+      id: uid(),
       title: "Montera ner pariserhjulet",
       content:
         "Avsluta sista åkturen kl 22. Säkerställ att alla bultar är ordentligt förvarade, och märk sektionerna enligt instruktionerna.",
@@ -180,7 +179,7 @@ const notes = {
       updatedAt: new Date().toISOString(),
     },
     {
-      id: uuid.v4(),
+      id: uid(),
       title: "Matvarulista för nästa stopp",
       content:
         "Behöver korv, bröd, senap, ketchup, socker till sockervaddsmaskinen och extra smör för popcornmaskinen.",
@@ -190,7 +189,7 @@ const notes = {
       updatedAt: new Date().toISOString(),
     },
     {
-      id: uuid.v4(),
+      id: uid(),
       title: "Planera tivolins layout i Västerås",
       content:
         "Följ den nya planen för större säkerhetsavstånd. Placera radiobilarna nära ingången och skjutbanan längst bort.",
@@ -200,7 +199,7 @@ const notes = {
       updatedAt: new Date().toISOString(),
     },
     {
-      id: uuid.v4(),
+      id: uid(),
       title: "Reparation av berg-och-dalbanan",
       content:
         "Slitage på spåren märkt på sista sektionen. Kontrollera alla säkerhetsfästen, ta fram reservdelar om nödvändigt.",
@@ -210,7 +209,7 @@ const notes = {
       updatedAt: new Date().toISOString(),
     },
     {
-      id: uuid.v4(),
+      id: uid(),
       title: "Kvällsshowen – förberedelser",
       content:
         "Dubbelkolla att musiken är klar och högtalarna fungerar. Kontrollera elden till eldslukaren och informera publik om säkerhetsavstånd.",

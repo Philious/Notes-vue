@@ -4,55 +4,88 @@ import IconButton from '@/components/IconButton.vue';
 import Button from '@/components/TextButton.vue'
 import TextField from '@/components/TextField.vue';
 import { useUserStore } from '@/store/userStore';
-import { IconEnum, ButtonEnum } from '@/types/enums';
+import { Icons, Buttons } from '@/types/enums';
 import { InputElement } from '@/types/errorHandlingTypes';
 import { multiValidate, emailValidation, passwordValidation } from '@/utils/errorHandling';
 import { ref } from 'vue';
-
-enum State {
-  Login,
-  NewUser,
-  Forgot
-}
 
 const { login, register, updatePassword } = useUserStore();
 
 const emailRef = ref<InputElement | null>(null);
 const passRef = ref<InputElement | null>(null);
-const pageState = ref<State>(State.Login);
+const pageState = ref<'login' | 'new' | 'forgot'>('login');
 const email = ref<string>('conny@carneval.com');
 const password = ref<string>('1234†');
 
 const action = () => {
   const isValid = multiValidate([emailRef.value, passRef.value])
   if (!isValid) return;
-  if (pageState.value === State.Login) login(email.value, password.value)
-  else if (pageState.value === State.NewUser) register(email.value, password.value)
-  else if (pageState.value === State.Forgot) updatePassword(email.value)
+  if (pageState.value === 'login') login(email.value, password.value)
+  else if (pageState.value === 'new') register(email.value, password.value)
+  else if (pageState.value === 'forgot') updatePassword(email.value)
 }
 </script>
 
 <template>
   <div class="login-view">
-    <TransitionGroup name="title" tag="h1" class="title">
-      <span v-if="pageState === State.Login">Login to Notes</span>
-      <span v-if="pageState === State.NewUser">Register</span>
-      <span v-if="pageState === State.Forgot">Forgot password</span>
+    <TransitionGroup
+      name="title"
+      tag="h1"
+      class="title"
+    >
+      <span v-if="pageState === 'login'">Login to Notes</span>
+      <span v-if="pageState === 'new'">Register</span>
+      <span v-if="pageState === 'forgot'">Forgot password</span>
     </TransitionGroup>
-    <TextField ref="emailRef" class="name" v-model="email" placeholder="user name" :validate="emailValidation"/>
+    <TextField
+      ref="emailRef"
+      v-model="email"
+      class="name"
+      placeholder="user name"
+      :validate="emailValidation"
+    />
     <Transition name="input">
-      <TextField ref="passRef" v-if="pageState !== State.Forgot" class="password" v-model="password" placeholder="password" :validate="passwordValidation"/>
+      <TextField
+        v-if="pageState !== 'forgot'"
+        ref="passRef"
+        v-model="password"
+        class="password"
+        placeholder="password"
+        :validate="passwordValidation"
+      />
     </Transition>
     <IconButton
-      :class="['action-btn', pageState === State.Forgot ? 'update-email-btn' : '']"
-      :type="ButtonEnum.Filled"
-      :icon="IconEnum.Right"
+      :class="['action-btn', pageState === 'forgot' ? 'update-email-btn' : '']"
+      :type="Buttons.Filled"
+      :icon="Icons.Right"
       :action="action"
     />
-    <TransitionGroup name="btn" tag="div" class="buttons">
-      <Button v-if="pageState !== State.Login" class="vertical back" :label="'Back'" :onClick="() => pageState = State.Login" :theme="ButtonEnum.Text" />
-      <Button  v-if="pageState === State.Login" class="vertical new" :label="'New user'" :onClick="() => pageState = State.NewUser" :theme="ButtonEnum.Text" />
-      <Button v-if="pageState === State.Login" class="vertical forgot" :label="`Forgot\npassword`" :onClick="() => pageState = State.Forgot" :theme="ButtonEnum.Text" />
+    <TransitionGroup
+      name="btn"
+      tag="div"
+      class="buttons"
+    >
+      <Button
+        v-if="pageState !== 'login'"
+        class="vertical back"
+        :label="'Back'"
+        :on-click="() => pageState = 'login'"
+        :style-type="Buttons.Text"
+      />
+      <Button
+        v-if="pageState === 'login'"
+        class="vertical new"
+        :label="'New user'"
+        :on-click="() => pageState = 'new'"
+        :style-type="Buttons.Text"
+      />
+      <Button
+        v-if="pageState === 'login'"
+        class="vertical forgot"
+        :label="`Forgot\npassword`"
+        :on-click="() => pageState = 'forgot'"
+        :style-type="Buttons.Text"
+      />
     </TransitionGroup>
   </div>
 </template>

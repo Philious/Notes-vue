@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { IconEnum, ButtonEnum } from '@/types/enums';
+import { IconType, ButtonType } from '@/types/enums';
 import Icon from '@/components/icons/IconComponent.vue';
 
 const props = defineProps<{
-  type: ButtonEnum;
-  icon: IconEnum;
+  type: ButtonType;
+  icon: IconType;
   action: (e: Event) => void;
 }>();
 
@@ -40,7 +40,7 @@ const props = defineProps<{
       inset: -.25rem;
       cursor: pointer;
     }
-    @include tabletUp() {
+    @include desktop() {
       &:hover {
         filter: brightness(1.5);
       }

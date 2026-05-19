@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IconEnum } from '@/types/enums';
+import { IconType, Icons } from '@/types/enums';
 import Add from '@/components/icons/AddIcon.vue';
 import Arrow from '@/components/icons/ArrowIcon.vue';
 import List from '@/components/icons/ListIcon.vue';
@@ -11,23 +11,23 @@ import LetterSize from '@/components/icons/LetterSizeIcon.vue';
 import Logout from '@/components/icons/LogoutIcon.vue';
 
 const props = defineProps<{
-  icon: IconEnum;
+  icon: IconType;
 }>()
 
-const icons: Record<IconEnum, typeof Add> = {
-  [IconEnum.Add]: Add,
-  [IconEnum.Down]: Arrow,
-  [IconEnum.Cancel]: Remove,
-  [IconEnum.Remove]: Remove,
-  [IconEnum.Left]: Arrow,
-  [IconEnum.List]: List,
-  [IconEnum.Options]: Options,
-  [IconEnum.Right]: Arrow,
-  [IconEnum.Setting]: Settings,
-  [IconEnum.Up]: Arrow,
-  [IconEnum.Check]: Check,
-  [IconEnum.LetterSize]: LetterSize,
-  [IconEnum.LogOut]: Logout,
+const icons: Record<IconType, typeof Add> = {
+  [Icons.Add]: Add,
+  [Icons.Down]: Arrow,
+  [Icons.Cancel]: Remove,
+  [Icons.Remove]: Remove,
+  [Icons.Left]: Arrow,
+  [Icons.List]: List,
+  [Icons.Options]: Options,
+  [Icons.Right]: Arrow,
+  [Icons.Setting]: Settings,
+  [Icons.Up]: Arrow,
+  [Icons.Check]: Check,
+  [Icons.LetterSize]: LetterSize,
+  [Icons.LogOut]: Logout,
 }
 
 </script>
@@ -40,9 +40,17 @@ const icons: Record<IconEnum, typeof Add> = {
 </template>
 
 <style scoped lang="scss">
-  .icn {
-    &.up { transform: rotate(270deg); }
-    &.left { transform: rotate(180deg); }
-    &.donw { transform: rotate(90deg); }
+.icn {
+  &.up {
+    transform: rotate(270deg);
   }
+
+  &.left {
+    transform: rotate(180deg);
+  }
+
+  &.donw {
+    transform: rotate(90deg);
+  }
+}
 </style>

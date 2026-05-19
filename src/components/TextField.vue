@@ -34,17 +34,21 @@ defineExpose<{
 
 </script>
 <template>
-  <InputLayout :input-state="state" :label="props.label" :help-text="helpText">
-    <template v-slot:input>
+  <InputLayout
+    :input-state="state"
+    :label="props.label"
+    :help-text="helpText"
+  >
+    <template #input>
       <input
-        class="input"
         v-model="model"
+        class="input"
         :placeholder="props.placeholder"
         :onfocus="validate?.onFocus"
         :onblur="validate?.onBlur"
         :onkeydown="onSpecialKeyboardEvent"
         :oninput="validate?.onUpdate"
-      />
+      >
     </template>
   </InputLayout>
 </template>
